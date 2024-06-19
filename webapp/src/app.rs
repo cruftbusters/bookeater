@@ -1,4 +1,6 @@
 use uuid::Uuid;
+use web_sys::wasm_bindgen::JsCast;
+use web_sys::{EventTarget, HtmlInputElement};
 use yew::prelude::*;
 
 #[derive(Clone, PartialEq)]
@@ -38,7 +40,13 @@ pub fn app() -> Html {
     html! {
         <main>
             <h1>{ "Transactions" }</h1>
-            { transactions.iter().map(|transaction| html! { <TransactionView on_update={on_update.clone()} transaction={transaction.clone()} /> }).collect::<Html>() }
+            { transactions.iter().map(|transaction| html! {
+                <TransactionView
+                    key={transaction.id.to_string()}
+                    on_update={on_update.clone()}
+                    transaction={transaction.clone()}
+                />
+            }).collect::<Html>() }
             <div>
                 <button onclick={on_create}>{ "create" }</button>
             </div>
@@ -58,20 +66,40 @@ pub fn transaction_view(props: &TransactionViewProps) -> Html {
         on_update,
         transaction,
     } = props;
-    let on_update = Callback::from({
-        let mut transaction = transaction.clone();
-        transaction.note = "updated".into();
 
-        let on_update = on_update.clone();
-        move |_| {
-            on_update.emit(transaction.clone());
+    let note = use_state(|| transaction.note.clone());
+
+    let on_change_note = Callback::from({
+        let note = note.clone();
+        move |e: InputEvent| {
+            let target: EventTarget = e
+                .target()
+                .expect("Event should have a target when dispatched");
+            note.set(target.unchecked_into::<HtmlInputElement>().value().into());
         }
     });
+
+    use_effect_with_deps(
+        {
+            let transaction = transaction.clone();
+            let note = note.clone();
+            let on_update = on_update.clone();
+            move |_| {
+                let mut transaction = transaction.clone();
+                transaction.note = (*note).clone();
+                on_update.emit(transaction);
+            }
+        },
+        note.clone(),
+    );
+
     html! {
         <div>
             <div>{ "id: " }{ &transaction.id }</div>
-            <div>{ "note: " }{ &transaction.note }</div>
-            <button onclick={on_update.clone()}>{ "update" }</button>
+            <div>
+                { "note: " }
+                <input oninput={on_change_note} value={(*note).clone()} />
+            </div>
         </div>
     }
 }

@@ -12,4 +12,5 @@ categories = ["gui", "wasm", "web-programming"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 uuid = { version = "1.8.0", features = ["js", "v4"] }
+web-sys = "0.3.69"
 yew = { version="0.20", features=["csr"] }

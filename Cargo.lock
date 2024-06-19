@@ -777,6 +777,7 @@ name = "trunk-template"
 version = "0.1.0"
 dependencies = [
  "uuid",
+ "web-sys",
  "yew",
 ]
 
