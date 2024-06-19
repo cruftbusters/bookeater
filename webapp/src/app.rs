@@ -2,11 +2,27 @@ use yew::prelude::*;
 
 #[function_component(App)]
 pub fn app() -> Html {
+    let transactions = use_state(|| vec![]);
+    let on_create = {
+        let transactions = transactions.clone();
+        move |_| {
+            let mut value = transactions.to_vec();
+            value.push(0);
+            transactions.set(value);
+        }
+    };
     html! {
         <main>
-            <img class="logo" src="https://yew.rs/img/logo.png" alt="Yew logo" />
-            <h1>{ "Hello World!" }</h1>
-            <span class="subtitle">{ "from Yew with " }<i class="heart" /></span>
+            <h1>{ "Transactions" }</h1>
+            { transactions.iter().map(|_| html! { <TransactionView /> }).collect::<Html>() }
+            <div>
+                <button onclick={on_create}>{ "create" }</button>
+            </div>
         </main>
     }
+}
+
+#[function_component(TransactionView)]
+pub fn transaction_view() -> Html {
+    html! { <div>{ "default transaction" }</div> }
 }
