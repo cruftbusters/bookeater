@@ -7,6 +7,7 @@ This file is an ephemeral queue of granules of work.
 * ~~create transaction~~
 * ~~edit transaction note~~
 * ~~edit transaction note free text~~
+* terraform to create cloudfront and s3 deployment?
 * edit transaction date
 * add transaction credits and debits
 * disallow saving transactions that do not net to zero amount
