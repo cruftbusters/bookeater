@@ -1,19 +1,17 @@
-name: pr_check
+name: check webapp
 
 on:
   workflow_dispatch:
   push:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  check:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: install toolchain
@@ -29,5 +27,7 @@ jobs:
         version: 'latest'
     - name: Build
       run: trunk build
+      working-directory: webapp
     - name: Run tests
       run: cargo test --verbose
+      working-directory: webapp
