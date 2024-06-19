@@ -27,12 +27,12 @@ pub fn app() -> Html {
     let on_create = {
         let transactions = transactions.clone();
         move |_| {
-            let mut value = transactions.to_vec();
-            value.push(Transaction {
+            let mut results = transactions.to_vec();
+            results.push(Transaction {
                 id: Uuid::new_v4(),
                 note: "".into(),
             });
-            transactions.set(value);
+            transactions.set(results);
         }
     };
     html! {
