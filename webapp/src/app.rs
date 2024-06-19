@@ -1,7 +1,10 @@
+use uuid::Uuid;
 use yew::prelude::*;
 
-#[derive(Clone)]
-struct Transaction {}
+#[derive(Clone, PartialEq)]
+struct Transaction {
+    id: Uuid,
+}
 
 #[function_component(App)]
 pub fn app() -> Html {
@@ -10,14 +13,14 @@ pub fn app() -> Html {
         let transactions = transactions.clone();
         move |_| {
             let mut value = transactions.to_vec();
-            value.push(Transaction {});
+            value.push(Transaction { id: Uuid::new_v4() });
             transactions.set(value);
         }
     };
     html! {
         <main>
             <h1>{ "Transactions" }</h1>
-            { transactions.iter().map(|_| html! { <TransactionView /> }).collect::<Html>() }
+            { transactions.iter().map(|transaction| html! { <TransactionView transaction={transaction.clone()} /> }).collect::<Html>() }
             <div>
                 <button onclick={on_create}>{ "create" }</button>
             </div>
@@ -25,7 +28,13 @@ pub fn app() -> Html {
     }
 }
 
+#[derive(Properties, PartialEq)]
+pub struct TransactionViewProps {
+    transaction: Transaction,
+}
+
 #[function_component(TransactionView)]
-pub fn transaction_view() -> Html {
-    html! { <div>{ "default transaction" }</div> }
+pub fn transaction_view(props: &TransactionViewProps) -> Html {
+    let TransactionViewProps { transaction } = props;
+    html! { <div>{ transaction.id }</div> }
 }
