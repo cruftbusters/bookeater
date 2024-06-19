@@ -1,5 +1,8 @@
 use yew::prelude::*;
 
+#[derive(Clone)]
+struct Transaction {}
+
 #[function_component(App)]
 pub fn app() -> Html {
     let transactions = use_state(|| vec![]);
@@ -7,7 +10,7 @@ pub fn app() -> Html {
         let transactions = transactions.clone();
         move |_| {
             let mut value = transactions.to_vec();
-            value.push(0);
+            value.push(Transaction {});
             transactions.set(value);
         }
     };
