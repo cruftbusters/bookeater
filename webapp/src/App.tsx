@@ -14,7 +14,7 @@ function App() {
             <div>duration</div>
         </div>
         {entries.map((entry, index) => (
-            <div className={styles.row} style={{order: entries.length - index}}>
+            <div key={entry.id} className={styles.row} style={{order: entries.length - index}}>
                 <ForEntry entry={entry} update={update}/>
             </div>
         ))}
@@ -49,12 +49,22 @@ function usePunchCard() {
 
 function ForEntry({entry, update}: { entry: Entry, update: (entry: Entry) => void }) {
     const {start, end} = entry
+    const [localStart, setLocalStart] = useState(start.toISOString())
+
     return (
         <>
-            <input value={start.toISOString()}
-                   onChange={e => update({...entry, start: new Date(e.target.value)})}/>
-            {end && <div>{end.toISOString()}</div>}
-            {end && <div>{(end.getTime() - start.getTime()) / 1000}s</div>}
+            <input value={localStart}
+                   onChange={e => {
+                       setLocalStart(e.target.value)
+                       const result = new Date(e.target.value)
+                       if (!isNaN(result.getTime())) {
+                           update({...entry, start: result})
+                       }
+                   }}
+                   className={start.toISOString() !== localStart ? styles.unsaved : ''}
+            />
+            <div>{end?.toISOString()}</div>
+            <div>{end ? `${(end.getTime() - start.getTime()) / 1000}s` : ''}</div>
         </>
     )
 }
