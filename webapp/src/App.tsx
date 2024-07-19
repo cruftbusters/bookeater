@@ -3,7 +3,7 @@ import styles from './index.module.scss'
 import {v4 as uuidv4} from 'uuid'
 
 function App() {
-    const {entries, toggle} = usePunchCard()
+    const {entries, toggle, update} = usePunchCard()
 
     return <div className={styles.grid}>
         <button onClick={() => toggle()}
@@ -13,13 +13,16 @@ function App() {
             <div>end</div>
             <div>duration</div>
         </div>
-        {entries.map(({start, end}, index) => (
-            <div className={styles.row} style={{order: entries.length - index}}>
-                <div>{start.toISOString()}</div>
-                {end && <div>{end.toISOString()}</div>}
-                {end && <div>{(end.getTime() - start.getTime()) / 1000}s</div>}
-            </div>
-        ))}
+        {entries.map((entry, index) => {
+            const {start, end} = entry
+            return (
+                <div className={styles.row} style={{order: entries.length - index}}>
+                    <input value={start.toISOString()} onChange={e => update({...entry, start:new Date(e.target.value)})}/>
+                    {end && <div>{end.toISOString()}</div>}
+                    {end && <div>{(end.getTime() - start.getTime()) / 1000}s</div>}
+                </div>
+            )
+        })}
     </div>
 }
 
@@ -44,7 +47,8 @@ function usePunchCard() {
                     return entry
                 })
             }
-        })
+        }),
+        update: (update: Entry) => setEntries(entries => entries.map(entry => entry.id === update.id ? update : entry))
     }
 }
 
