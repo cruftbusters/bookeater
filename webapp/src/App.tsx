@@ -49,19 +49,21 @@ function usePunchCard() {
 
 function ForEntry({entry, update}: { entry: Entry, update: (entry: Entry) => void }) {
     const {start, end} = entry
-    const [localStart, setLocalStart] = useState(start.toISOString())
+    const [startBuffer, setStartBuffer] = useState('')
 
     return (
         <>
-            <input value={localStart}
+            <input value={startBuffer || start.toISOString()}
                    onChange={e => {
-                       setLocalStart(e.target.value)
                        const result = new Date(e.target.value)
                        if (!isNaN(result.getTime())) {
                            update({...entry, start: result})
+                           setStartBuffer('')
+                       } else {
+                           setStartBuffer(e.target.value)
                        }
                    }}
-                   className={start.toISOString() !== localStart ? styles.unsaved : ''}
+                   className={startBuffer !== '' ? styles.unsaved : ''}
             />
             <div>{end?.toISOString()}</div>
             <div>{end ? `${(end.getTime() - start.getTime()) / 1000}s` : ''}</div>
