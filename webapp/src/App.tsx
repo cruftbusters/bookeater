@@ -64,7 +64,7 @@ function ForEntry({entry, update}: { entry: Entry, update: (entry: Entry) => voi
                            setStartBuffer(e.target.value)
                        }
                    }}
-                   className={startBuffer !== '' ? styles.unsaved : ''}
+                   className={[styles.field].concat([startBuffer !== '' ? styles.unsaved : '']).join(' ')}
             />
             <input value={endBuffer || end?.toISOString() || ''}
                    onChange={e => {
@@ -81,7 +81,7 @@ function ForEntry({entry, update}: { entry: Entry, update: (entry: Entry) => voi
                            }
                        }
                    }}
-                   className={endBuffer !== '' ? styles.unsaved : ''}
+                   className={[styles.field].concat([endBuffer !== '' ? styles.unsaved : '']).join(' ')}
             />
             <div>{end ? `${(end.getTime() - start.getTime()) / 1000}s` : ''}</div>
         </>
