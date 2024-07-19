@@ -1,8 +1,9 @@
-$gap: 1em;
-$gap_half: 0.5em;
+$gap: 0.5em;
+$gap_half: 0.25em;
 
 .grid {
-  padding: $gap_half;
+  padding: $gap;
+  grid-gap: $gap_half;
   display: inline-grid;
   grid-template-columns: repeat(3, auto);
 }
@@ -14,13 +15,20 @@ $gap_half: 0.5em;
 
 .row {
   display: grid;
-  grid-gap: $gap;
   grid-template-columns: subgrid;
   grid-column: 1 / 4;
 }
 
 .rowHeader {
   font-weight: bold;
+}
+
+.field {
+  padding: $gap;
+  border: none;
+  outline: none;
+  background-color: #EEE;
+  border-radius: $gap_half;
 }
 
 .unsaved {
