@@ -1,6 +1,11 @@
 $gap: 0.5em;
 $gap_half: 0.25em;
 
+.container {
+  display: inline-flex;
+  flex-direction: column;
+}
+
 .grid {
   padding: $gap;
   grid-gap: $gap_half;
