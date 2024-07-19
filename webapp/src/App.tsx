@@ -4,18 +4,21 @@ import styles from './index.module.scss'
 function App() {
     const {entries, toggle} = usePunchCard()
 
-    return <>
-        <button onClick={() => toggle()}>toggle</button>
-        <div className={styles.entries}>
-            {entries.map(({start, end}, index) => (
-                <div className={styles.entry} style={{order: -index}}>
-                    <div>{start.toISOString()}</div>
-                    {end && <div>{end.toISOString()}</div>}
-                    {end && <div>{(end.getUTCSeconds() - start.getUTCSeconds())}s</div>}
-                </div>
-            ))}
+    return <div className={styles.grid}>
+        <button onClick={() => toggle()} className={styles.button}>{entries.length === 0 || entries[entries.length - 1].end !== undefined ? 'punch in' : 'punch out'}</button>
+        <div className={[styles.row, styles.rowHeader].join(' ')}>
+            <div>start</div>
+            <div>end</div>
+            <div>duration</div>
         </div>
-    </>
+        {entries.map(({start, end}, index) => (
+            <div className={styles.row} style={{order: entries.length - index}}>
+                <div>{start.toISOString()}</div>
+                {end && <div>{end.toISOString()}</div>}
+                {end && <div>{(end.getTime() - start.getTime()) / 1000}s</div>}
+            </div>
+        ))}
+    </div>
 }
 
 type Entry = {

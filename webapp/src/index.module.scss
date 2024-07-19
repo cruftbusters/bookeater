@@ -1,13 +1,24 @@
-$gap: 0.5em;
+$gap: 1em;
+$gap_half: 0.5em;
 
-.entries {
-  padding: $gap;
-  display: grid;
-  grid-template-columns: subgrid;
+.grid {
+  padding: $gap_half;
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
 }
 
-.entry {
+.button {
+  grid-column: 1 / 4;
+  padding: $gap;
+}
+
+.row {
   display: grid;
-  grid-template-columns: auto auto auto 1fr;
   grid-gap: $gap;
+  grid-template-columns: subgrid;
+  grid-column: 1 / 4;
+}
+
+.rowHeader {
+  font-weight: bold;
 }
