@@ -1,11 +1,13 @@
 import {useState} from "react";
 import styles from './index.module.scss'
+import {v4 as uuidv4} from 'uuid'
 
 function App() {
     const {entries, toggle} = usePunchCard()
 
     return <div className={styles.grid}>
-        <button onClick={() => toggle()} className={styles.button}>{entries.length === 0 || entries[entries.length - 1].end !== undefined ? 'punch in' : 'punch out'}</button>
+        <button onClick={() => toggle()}
+                className={styles.button}>{entries.length === 0 || entries[entries.length - 1].end !== undefined ? 'punch in' : 'punch out'}</button>
         <div className={[styles.row, styles.rowHeader].join(' ')}>
             <div>start</div>
             <div>end</div>
@@ -22,6 +24,7 @@ function App() {
 }
 
 type Entry = {
+    id: string,
     start: Date,
     end?: Date,
 }
@@ -32,13 +35,11 @@ function usePunchCard() {
         entries,
         toggle: () => setEntries(entries => {
             if (entries.length === 0 || entries[entries.length - 1].end !== undefined) {
-                return entries.concat({start: new Date()})
+                return entries.concat({id: uuidv4(), start: new Date()})
             } else {
                 return entries.map((entry, index) => {
                     if (index === entries.length - 1) {
-                        const start = entry.start
-                        const end = new Date()
-                        return {start, end}
+                        return {end: new Date(), ...entry}
                     }
                     return entry
                 })
