@@ -13,16 +13,11 @@ function App() {
             <div>end</div>
             <div>duration</div>
         </div>
-        {entries.map((entry, index) => {
-            const {start, end} = entry
-            return (
-                <div className={styles.row} style={{order: entries.length - index}}>
-                    <input value={start.toISOString()} onChange={e => update({...entry, start:new Date(e.target.value)})}/>
-                    {end && <div>{end.toISOString()}</div>}
-                    {end && <div>{(end.getTime() - start.getTime()) / 1000}s</div>}
-                </div>
-            )
-        })}
+        {entries.map((entry, index) => (
+            <div className={styles.row} style={{order: entries.length - index}}>
+                <ForEntry entry={entry} update={update}/>
+            </div>
+        ))}
     </div>
 }
 
@@ -50,6 +45,18 @@ function usePunchCard() {
         }),
         update: (update: Entry) => setEntries(entries => entries.map(entry => entry.id === update.id ? update : entry))
     }
+}
+
+function ForEntry({entry, update}: { entry: Entry, update: (entry: Entry) => void }) {
+    const {start, end} = entry
+    return (
+        <>
+            <input value={start.toISOString()}
+                   onChange={e => update({...entry, start: new Date(e.target.value)})}/>
+            {end && <div>{end.toISOString()}</div>}
+            {end && <div>{(end.getTime() - start.getTime()) / 1000}s</div>}
+        </>
+    )
 }
 
 export default App
