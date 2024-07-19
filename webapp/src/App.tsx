@@ -37,7 +37,7 @@ function usePunchCard() {
             } else {
                 return entries.map((entry, index) => {
                     if (index === entries.length - 1) {
-                        return {end: new Date(), ...entry}
+                        return {...entry, end: new Date()}
                     }
                     return entry
                 })
@@ -50,6 +50,7 @@ function usePunchCard() {
 function ForEntry({entry, update}: { entry: Entry, update: (entry: Entry) => void }) {
     const {start, end} = entry
     const [startBuffer, setStartBuffer] = useState('')
+    const [endBuffer, setEndBuffer] = useState('')
 
     return (
         <>
@@ -65,7 +66,23 @@ function ForEntry({entry, update}: { entry: Entry, update: (entry: Entry) => voi
                    }}
                    className={startBuffer !== '' ? styles.unsaved : ''}
             />
-            <div>{end?.toISOString()}</div>
+            <input value={endBuffer || end?.toISOString() || ''}
+                   onChange={e => {
+                       if (e.target.value === '') {
+                           update({...entry, end: undefined})
+                           setEndBuffer('')
+                       } else {
+                           const result = new Date(e.target.value)
+                           if (!isNaN(result.getTime())) {
+                               update({...entry, end: result})
+                               setEndBuffer('')
+                           } else {
+                               setEndBuffer(e.target.value)
+                           }
+                       }
+                   }}
+                   className={endBuffer !== '' ? styles.unsaved : ''}
+            />
             <div>{end ? `${(end.getTime() - start.getTime()) / 1000}s` : ''}</div>
         </>
     )
