@@ -3,18 +3,11 @@ $gap: 0.5em;
 .entries {
   padding: $gap;
   display: grid;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: subgrid;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
   grid-gap: $gap;
-}
-
-.start {
-  grid-column: 1;
-}
-
-.end {
-  grid-column: 2;
-}
-
-.duration {
-  grid-column: 3;
 }

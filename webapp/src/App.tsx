@@ -8,11 +8,11 @@ function App() {
         <button onClick={() => toggle()}>toggle</button>
         <div className={styles.entries}>
             {entries.map(({start, end}, index) => (
-                <>
-                    <div className={styles.start} style={{order: -index}}>{start.toISOString()}</div>
-                    {end && <div className={styles.end} style={{order: -index}}>{end.toISOString()}</div>}
-                    {end && <div className={styles.duration} style={{order: -index}}>{(end.getUTCSeconds() - start.getUTCSeconds())}s</div>}
-                </>
+                <div className={styles.entry} style={{order: -index}}>
+                    <div>{start.toISOString()}</div>
+                    {end && <div>{end.toISOString()}</div>}
+                    {end && <div>{(end.getUTCSeconds() - start.getUTCSeconds())}s</div>}
+                </div>
             ))}
         </div>
     </>
