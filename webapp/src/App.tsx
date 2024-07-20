@@ -1,6 +1,7 @@
 import { useState } from "react"
 import styles from './index.module.scss'
 import { v4 as uuidv4 } from 'uuid'
+import {PrettyDuration} from "./PrettyDuration.tsx";
 
 function App() {
   const { entries, toggle, update, clear } = usePunchCard()
@@ -87,7 +88,7 @@ function ForEntry({ entry, update }: { entry: Entry, update: (entry: Entry) => v
         }}
         className={[styles.field].concat([endBuffer !== '' ? styles.unsaved : '']).join(' ')}
       />
-      <div>{end ? `${(end.getTime() - start.getTime()) / 1000}s` : ''}</div>
+      <div>{end ? <PrettyDuration seconds={(end.getTime() - start.getTime()) / 1000} /> : ''}</div>
     </>
   )
 }
