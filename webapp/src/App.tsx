@@ -5,10 +5,10 @@ import {PrettyDuration} from "./PrettyDuration.tsx";
 
 function App() {
   const { entries, toggle, update, clear } = usePunchCard()
-
+  const punchButtonText = entries.length === 0 || entries[entries.length - 1].end !== undefined ? 'punch in' : 'punch out'
   return <div className={styles.container}>
     <button onClick={() => toggle()}
-      className={styles.button}>{entries.length === 0 || entries[entries.length - 1].end !== undefined ? 'punch in' : 'punch out'}</button>
+      className={styles.button}>{punchButtonText}</button>
     <div className={styles.grid}>
       <div className={[styles.row, styles.rowHeader].join(' ')}>
         <div>start</div>
