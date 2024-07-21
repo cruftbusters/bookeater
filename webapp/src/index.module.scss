@@ -1,11 +1,7 @@
-$gap: 0.5em;
-$dull: #eee;
-
-.title {
-  padding: $gap;
-  background-color: $dull;
+.dull {
+  background-color: #eee;
 }
 
-.content {
-  padding: $gap;
+.gap {
+  padding: 0.5em;
 }
