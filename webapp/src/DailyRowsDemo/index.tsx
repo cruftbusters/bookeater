@@ -11,8 +11,8 @@ function DailyRowsDemo() {
         Daily Rows Demo
       </h1>
       <div className={styles.gap_margin}>
-        {state.days.map((day) => (
-          <div>{day}</div>
+        {state.days.map((day, key) => (
+          <div key={key}>{day}</div>
         ))}
       </div>
     </>
