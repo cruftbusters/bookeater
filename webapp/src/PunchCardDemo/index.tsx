@@ -41,7 +41,8 @@ function PunchCardDemo() {
           </div>
           {state.map((punch) => (
             <div key={punch.id} className={cn(styles.row, styles.full_width)}>
-              <div>{punch.timestamp.toLocaleString()}</div>
+              <div>{punch.timestamp.toLocaleDateString()}</div>
+              <div>{punch.timestamp.toLocaleTimeString()}</div>
               <div
                 className={cn(
                   punch.type === 'punch_in'
