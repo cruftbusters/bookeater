@@ -40,17 +40,15 @@ function PunchCardDemo() {
             />
           </div>
           {state.map((punch) => (
-            <div key={punch.id} className={cn(styles.row, styles.full_width)}>
-              <input value={punch.timestamp.toLocaleDateString()} />
-              <input value={punch.timestamp.toLocaleTimeString()} />
-              <div
-                className={cn(
-                  punch.type === 'punch_in'
-                    ? styles.type_punch_in
-                    : styles.type_punch_out,
-                )}
-              />
-            </div>
+            <PunchEditor
+              key={punch.id}
+              punch={punch}
+              update={(punch) =>
+                setState((state) =>
+                  state.map((check) => (check.id === punch.id ? punch : check)),
+                )
+              }
+            />
           ))}
         </div>
       </div>
@@ -59,5 +57,59 @@ function PunchCardDemo() {
 }
 
 type Punch = { id: string; timestamp: Date; type: 'punch_in' | 'punch_out' }
+
+function PunchEditor({
+  punch,
+  update,
+}: {
+  punch: Punch
+  update: (punch: Punch) => void
+}) {
+  const [dateString, setDateString] = useState('')
+  const [timeString, setTimeString] = useState('')
+  return (
+    <div className={cn(styles.row, styles.full_width)}>
+      <input
+        value={dateString || punch.timestamp.toDateString()}
+        className={dateString.length === 0 ? '' : styles.warn}
+        onChange={(e) => {
+          const dateString = e.target.value
+          const timestamp = new Date(
+            Date.parse(`${dateString} ${punch.timestamp.toTimeString()}`),
+          )
+          if (isNaN(timestamp.getTime())) {
+            setDateString(dateString)
+          } else {
+            setDateString('')
+            update({ ...punch, timestamp })
+          }
+        }}
+      />
+      <input
+        value={timeString || punch.timestamp.toTimeString()}
+        className={timeString.length === 0 ? '' : styles.warn}
+        onChange={(e) => {
+          const timeString = e.target.value
+          const timestamp = new Date(
+            Date.parse(`${punch.timestamp.toDateString()} ${timeString}`),
+          )
+          if (isNaN(timestamp.getTime())) {
+            setTimeString(timeString)
+          } else {
+            setTimeString('')
+            update({ ...punch, timestamp })
+          }
+        }}
+      />
+      <div
+        className={cn(
+          punch.type === 'punch_in'
+            ? styles.type_punch_in
+            : styles.type_punch_out,
+        )}
+      />
+    </div>
+  )
+}
 
 export default PunchCardDemo
