@@ -65,44 +65,28 @@ function PunchEditor({
   punch: Punch
   update: (punch: Punch) => void
 }) {
-  const [dateString, setDateString] = useState('')
-  const [timeString, setTimeString] = useState('')
-  const [effectiveDateString, effectiveTimeString] = [
-    punch.timestamp.toDateString(),
-    punch.timestamp.toTimeString(),
-  ]
+  const timeString = punch.timestamp.toTimeString()
+  const dateString = punch.timestamp.toDateString()
   return (
     <div className={cn(styles.row, styles.full_width)}>
-      <input
-        value={dateString || effectiveDateString}
-        className={dateString.length === 0 ? '' : styles.warn}
-        onChange={(e) => {
-          const dateString = e.target.value
-          const timestamp = new Date(
-            Date.parse(`${dateString} ${effectiveTimeString}`),
-          )
+      <Field
+        value={dateString}
+        update={(value) => {
+          const timestamp = new Date(Date.parse(`${value} ${timeString}`))
           if (isNaN(timestamp.getTime())) {
-            setDateString(dateString)
-          } else {
-            setDateString('')
-            update({ ...punch, timestamp })
+            return Error('date is not valid')
           }
+          update({ ...punch, timestamp })
         }}
       />
-      <input
-        value={timeString || effectiveTimeString}
-        className={timeString.length === 0 ? '' : styles.warn}
-        onChange={(e) => {
-          const timeString = e.target.value
-          const timestamp = new Date(
-            Date.parse(`${effectiveDateString} ${timeString}`),
-          )
+      <Field
+        value={timeString}
+        update={(value) => {
+          const timestamp = new Date(Date.parse(`${dateString} ${value}`))
           if (isNaN(timestamp.getTime())) {
-            setTimeString(timeString)
-          } else {
-            setTimeString('')
-            update({ ...punch, timestamp })
+            return Error('time is not valid')
           }
+          update({ ...punch, timestamp })
         }}
       />
       <div
@@ -113,6 +97,32 @@ function PunchEditor({
         )}
       />
     </div>
+  )
+}
+
+function Field({
+  value,
+  update,
+}: {
+  value: string
+  update: (value: string) => Error | undefined
+}) {
+  const [localValue, setLocalValue] = useState<
+    undefined | { error: Error; value: string }
+  >()
+  return (
+    <input
+      value={localValue?.value || value}
+      className={localValue ? styles.warn : ''}
+      onChange={(e) => {
+        const error = update(e.target.value)
+        if (error) {
+          setLocalValue({ error, value: e.target.value })
+        } else {
+          setLocalValue(undefined)
+        }
+      }}
+    />
   )
 }
 
