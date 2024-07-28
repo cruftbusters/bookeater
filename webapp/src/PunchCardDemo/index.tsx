@@ -43,11 +43,15 @@ function PunchCardDemo() {
             <PunchEditor
               key={punch.id}
               punch={punch}
-              update={(punch) =>
+              updateTimestamp={({ date, time }) => {
+                const timestamp = new Date(Date.parse(`${date} ${time}`))
+                if (isNaN(timestamp.getTime())) {
+                  return Error('date or time is not valid')
+                }
                 setState((state) =>
                   state.map((check) => (check.id === punch.id ? punch : check)),
                 )
-              }
+              }}
             />
           ))}
         </div>
@@ -58,37 +62,26 @@ function PunchCardDemo() {
 
 type Punch = { id: string; timestamp: Date; type: 'punch_in' | 'punch_out' }
 
-function PunchEditor({
-  punch,
-  update,
-}: {
+type PunchEditorProps = {
   punch: Punch
-  update: (punch: Punch) => void
-}) {
-  const timeString = punch.timestamp.toTimeString()
-  const dateString = punch.timestamp.toDateString()
+  updateTimestamp: UpdateTimestamp
+}
+
+type UpdateTimestamp = ({
+  date,
+  time,
+}: {
+  date: string
+  time: string
+}) => Error | undefined
+
+function PunchEditor({ punch, updateTimestamp }: PunchEditorProps) {
+  const time = punch.timestamp.toTimeString()
+  const date = punch.timestamp.toDateString()
   return (
     <div className={cn(styles.row, styles.full_width)}>
-      <Field
-        value={dateString}
-        update={(value) => {
-          const timestamp = new Date(Date.parse(`${value} ${timeString}`))
-          if (isNaN(timestamp.getTime())) {
-            return Error('date is not valid')
-          }
-          update({ ...punch, timestamp })
-        }}
-      />
-      <Field
-        value={timeString}
-        update={(value) => {
-          const timestamp = new Date(Date.parse(`${dateString} ${value}`))
-          if (isNaN(timestamp.getTime())) {
-            return Error('time is not valid')
-          }
-          update({ ...punch, timestamp })
-        }}
-      />
+      <Field value={date} update={(date) => updateTimestamp({ date, time })} />
+      <Field value={time} update={(time) => updateTimestamp({ date, time })} />
       <div
         className={cn(
           punch.type === 'punch_in'
