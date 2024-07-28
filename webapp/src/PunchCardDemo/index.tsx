@@ -67,15 +67,19 @@ function PunchEditor({
 }) {
   const [dateString, setDateString] = useState('')
   const [timeString, setTimeString] = useState('')
+  const [effectiveDateString, effectiveTimeString] = [
+    punch.timestamp.toDateString(),
+    punch.timestamp.toTimeString(),
+  ]
   return (
     <div className={cn(styles.row, styles.full_width)}>
       <input
-        value={dateString || punch.timestamp.toDateString()}
+        value={dateString || effectiveDateString}
         className={dateString.length === 0 ? '' : styles.warn}
         onChange={(e) => {
           const dateString = e.target.value
           const timestamp = new Date(
-            Date.parse(`${dateString} ${punch.timestamp.toTimeString()}`),
+            Date.parse(`${dateString} ${effectiveTimeString}`),
           )
           if (isNaN(timestamp.getTime())) {
             setDateString(dateString)
@@ -86,12 +90,12 @@ function PunchEditor({
         }}
       />
       <input
-        value={timeString || punch.timestamp.toTimeString()}
+        value={timeString || effectiveTimeString}
         className={timeString.length === 0 ? '' : styles.warn}
         onChange={(e) => {
           const timeString = e.target.value
           const timestamp = new Date(
-            Date.parse(`${punch.timestamp.toDateString()} ${timeString}`),
+            Date.parse(`${effectiveDateString} ${timeString}`),
           )
           if (isNaN(timestamp.getTime())) {
             setTimeString(timeString)
