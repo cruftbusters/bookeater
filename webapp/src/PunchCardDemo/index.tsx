@@ -43,13 +43,17 @@ function PunchCardDemo() {
             <PunchEditor
               key={punch.id}
               punch={punch}
-              updateTimestamp={({ date, time }) => {
-                const timestamp = new Date(Date.parse(`${date} ${time}`))
+              updateTimestamp={({ date, time, zone }) => {
+                const timestamp = new Date(
+                  Date.parse(`${date} ${time} ${zone}`),
+                )
                 if (isNaN(timestamp.getTime())) {
-                  return Error('date or time is not valid')
+                  return Error('date or time or zone is not valid')
                 }
                 setState((state) =>
-                  state.map((check) => (check.id === punch.id ? punch : check)),
+                  state.map((check) =>
+                    check.id === punch.id ? { ...punch, timestamp } : check,
+                  ),
                 )
               }}
             />
@@ -67,21 +71,32 @@ type PunchEditorProps = {
   updateTimestamp: UpdateTimestamp
 }
 
-type UpdateTimestamp = ({
-  date,
-  time,
-}: {
+type UpdateTimestamp = (dateTimeAndZone: {
   date: string
   time: string
+  zone: string
 }) => Error | undefined
 
 function PunchEditor({ punch, updateTimestamp }: PunchEditorProps) {
-  const time = punch.timestamp.toTimeString()
   const date = punch.timestamp.toDateString()
+  const timeAndZone = punch.timestamp.toTimeString()
+  const index = timeAndZone.indexOf(' ')
+  const time = timeAndZone.slice(0, index)
+  const zone = timeAndZone.slice(index + 1)
   return (
     <div className={cn(styles.row, styles.full_width)}>
-      <Field value={date} update={(date) => updateTimestamp({ date, time })} />
-      <Field value={time} update={(time) => updateTimestamp({ date, time })} />
+      <Field
+        value={date}
+        update={(date) => updateTimestamp({ date, time, zone })}
+      />
+      <Field
+        value={time}
+        update={(time) => updateTimestamp({ date, time, zone })}
+      />
+      <Field
+        value={zone}
+        update={(zone) => updateTimestamp({ date, time, zone })}
+      />
       <div
         className={cn(
           punch.type === 'punch_in'
