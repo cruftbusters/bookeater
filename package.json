@@ -1,3 +1,5 @@
 {
-  "workspaces": ["webapp"]
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  }
 }
