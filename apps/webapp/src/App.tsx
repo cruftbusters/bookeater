@@ -2,6 +2,7 @@ import cn from './cn'
 import PunchCardDemo from './PunchCardDemo'
 import styles from './index.module.scss'
 import Readme from './Readme'
+import BooksDemo from './BooksDemo'
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       </header>
       <Readme />
       <PunchCardDemo />
+      <BooksDemo />
     </>
   )
 }
