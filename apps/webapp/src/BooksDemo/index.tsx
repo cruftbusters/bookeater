@@ -36,8 +36,7 @@ export default function BooksDemo() {
       </h1>
       <div className={cn(styles.gap_margin)}>
         {state.entries.map((entry, index) => (
-          <div key={index}>
-            entry
+          <div aria-label="entry" key={index}>
             <label>
               account
               <input
