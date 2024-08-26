@@ -1,6 +1,9 @@
 import { useState } from 'react'
+import rootStyles from '../index.module.scss'
+import localStyles from './index.module.scss'
 import cn from '../cn'
-import styles from '../index.module.scss'
+
+const styles = Object.assign(rootStyles, localStyles)
 
 const defaultEntry = {
   account: '',
@@ -16,7 +19,6 @@ export default function BooksDemo() {
   const [state, setState] = useState<State>({
     entries: [defaultEntry],
   })
-  console.log(state)
 
   const addEntry = (entry: Entry) => {
     return setState((state) => ({ entries: state.entries.concat([entry]) }))
@@ -35,11 +37,16 @@ export default function BooksDemo() {
         Books Demo
       </h1>
       <div className={cn(styles.gap_margin)}>
-        {state.entries.map((entry, index) => (
-          <div aria-label="entry" key={index}>
-            <label>
-              account
+        <div className={cn(styles.book_grid)}>
+          <div className={cn(styles.entry)}>
+            <span>account</span>
+            <span>debit</span>
+            <span>credit</span>
+          </div>
+          {state.entries.map((entry, index) => (
+            <div aria-label="entry" key={index} className={cn(styles.entry)}>
               <input
+                aria-label="account"
                 value={entry.account}
                 onChange={(e) =>
                   updateEntry(index, (entry) => ({
@@ -48,60 +55,59 @@ export default function BooksDemo() {
                   }))
                 }
               />
-            </label>
-            <label>
-              debit
               <AmountInput
+                aria-label="debit"
                 value={entry.debit}
-                onChange={(debit) =>
+                onUpdate={(debit) =>
                   updateEntry(index, (entry) => ({ ...entry, debit }))
                 }
               />
-            </label>
-            <label>
-              credit
               <AmountInput
+                aria-label="credit"
                 value={entry.credit}
-                onChange={(credit) =>
+                onUpdate={(credit) =>
                   updateEntry(index, (entry) => ({ ...entry, credit }))
                 }
               />
-            </label>
-          </div>
-        ))}
-        <button onClick={() => addEntry(defaultEntry)}>add entry</button>
-        <Summary state={state} />
+            </div>
+          ))}
+          <button
+            onClick={() => addEntry(defaultEntry)}
+            className={cn(styles.add_entry)}
+          >
+            add entry
+          </button>
+          <Summary state={state} />
+        </div>
       </div>
     </>
   )
 }
 
 function Summary({ state }: { state: State }) {
-  const summary: Record<string, Amount> = {}
+  const summary = new Map<string, Amount>()
   for (const entry of state.entries) {
-    let balance = summary[entry.account] || 0
-    balance += entry.debit
-    balance -= entry.credit
-    summary[entry.account] = balance
-  }
-
-  if (Object.keys(summary).length === 1 && summary[''] === 0) {
-    return (
-      <div>
-        summary:
-        <div>nothing to report :)</div>
-      </div>
-    )
+    let balance = summary.get(entry.account) || 0
+    balance += entry.debit - entry.credit
+    if (balance === 0) {
+      summary.delete(entry.account)
+    } else {
+      summary.set(entry.account, balance)
+    }
   }
 
   return (
     <div>
       summary:
-      {Object.entries(summary).map(([account, balance]) => (
-        <div key={account}>
-          {account}: <FormatAmount>{balance}</FormatAmount>
-        </div>
-      ))}
+      {summary.size > 0 ? (
+        Array.from(summary.entries()).map(([account, balance]) => (
+          <div key={account}>
+            {account}: <FormatAmount>{balance}</FormatAmount>
+          </div>
+        ))
+      ) : (
+        <div>nothing to report :)</div>
+      )}
     </div>
   )
 }
@@ -110,14 +116,19 @@ type Amount = number
 
 function AmountInput({
   value,
-  onChange,
-}: {
+  onUpdate,
+  ...props
+}: React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+> & {
   value: Amount
-  onChange: (amount: Amount) => void
+  onUpdate: (amount: Amount) => void
 }) {
   const [localValue, setLocalValue] = useState('')
   return (
     <input
+      {...props}
       value={localValue || value}
       onChange={(e) => {
         const localValue = e.target.value
@@ -126,7 +137,7 @@ function AmountInput({
           setLocalValue(localValue)
         } else {
           setLocalValue('')
-          onChange(value)
+          onUpdate(value)
         }
       }}
     />

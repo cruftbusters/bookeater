@@ -1,0 +1,16 @@
+@import '../index.module.scss';
+
+.book_grid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, auto);
+  grid-gap: $gap_half;
+}
+
+.book_grid > * {
+  grid-column: 1 / 4;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: subgrid;
+}
