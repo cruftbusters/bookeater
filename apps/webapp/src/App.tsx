@@ -1,5 +1,5 @@
 import BooksDemo from './BooksDemo'
-import PunchCardDemo from './PunchCardDemo'
+import TimekeepingDemo from './TimekeepingDemo'
 import Readme from './Readme'
 import Todo from './Todo'
 
@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <Readme />
-      <PunchCardDemo />
+      <TimekeepingDemo />
       <BooksDemo />
       <Todo />
     </>

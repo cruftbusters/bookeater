@@ -6,13 +6,13 @@ import cn from '../cn'
 
 const styles = Object.assign(rootStyles, localStyles)
 
-function PunchCardDemo() {
+function TimekeepingDemo() {
   const [state, setState] = useState<Array<Punch>>([])
 
   return (
     <>
       <h1 className={cn(styles.dull, styles.header1, styles.gap_padding)}>
-        Punch Card Demo
+        Timekeeping Demo
       </h1>
       <div className={cn(styles.gap_margin)}>
         <div className={cn(styles.grid)}>
@@ -134,4 +134,4 @@ function Field({
   )
 }
 
-export default PunchCardDemo
+export default TimekeepingDemo
