@@ -1,6 +1,7 @@
+import BooksDemo from './BooksDemo'
 import PunchCardDemo from './PunchCardDemo'
 import Readme from './Readme'
-import BooksDemo from './BooksDemo'
+import Todo from './Todo'
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Readme />
       <PunchCardDemo />
       <BooksDemo />
+      <Todo />
     </>
   )
 }
