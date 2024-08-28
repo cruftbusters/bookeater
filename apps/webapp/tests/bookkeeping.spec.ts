@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('summarize credit movement', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'Books Demo' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'bookkeeping demo' })).toBeVisible();
 
   const summary = page.getByText('summary')
   await expect(summary).toContainText(`nothing to report :)`)
