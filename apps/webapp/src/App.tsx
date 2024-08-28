@@ -1,4 +1,4 @@
-import BooksDemo from './BooksDemo'
+import BookkeepingDemo from './BookkeepingDemo'
 import TimekeepingDemo from './TimekeepingDemo'
 import Readme from './Readme'
 import Todo from './Todo'
@@ -8,7 +8,7 @@ function App() {
     <>
       <Readme />
       <TimekeepingDemo />
-      <BooksDemo />
+      <BookkeepingDemo />
       <Todo />
     </>
   )

@@ -15,7 +15,7 @@ type Entry = { account: string; debit: Amount; credit: Amount }
 
 type State = { entries: Entry[] }
 
-export default function BooksDemo() {
+export default function BookkeepingDemo() {
   const [state, setState] = useState<State>({
     entries: [defaultEntry],
   })
@@ -34,7 +34,7 @@ export default function BooksDemo() {
   return (
     <>
       <h1 className={cn(styles.dull, styles.header1, styles.gap_padding)}>
-        Books Demo
+        Bookkeeping Demo
       </h1>
       <div className={cn(styles.gap_margin)}>
         <div className={cn(styles.book_grid)}>
