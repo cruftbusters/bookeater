@@ -4,7 +4,7 @@ stack_name=bookeater
 
 action=create-stack
 
-if aws cloudformation describe-stacks --stack-name $stack_name > /dev/null ; then
+if aws cloudformation describe-stacks --stack-name $stack_name > /dev/null 2>&1 ; then
   action=update-stack
 fi
 
