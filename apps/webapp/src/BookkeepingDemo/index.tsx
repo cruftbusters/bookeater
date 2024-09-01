@@ -6,12 +6,12 @@ import cn from '../cn'
 const styles = Object.assign(rootStyles, localStyles)
 
 const defaultEntry = {
-  account: '',
-  debit: 0,
-  credit: 0,
+  debitAccount: '',
+  creditAccount: '',
+  amount: 0,
 }
 
-type Entry = { account: string; debit: Amount; credit: Amount }
+type Entry = { debitAccount: string; creditAccount: string; amount: Amount }
 
 type State = { entries: Entry[] }
 
@@ -39,34 +39,37 @@ export default function BookkeepingDemo() {
       <div className={cn(styles.gap_margin)}>
         <div className={cn(styles.book_grid)}>
           <div className={cn(styles.entry)}>
-            <span>account</span>
-            <span>debit</span>
-            <span>credit</span>
+            <span>debit account</span>
+            <span>credit account</span>
+            <span>amount</span>
           </div>
           {state.entries.map((entry, index) => (
             <div aria-label="entry" key={index} className={cn(styles.entry)}>
               <input
-                aria-label="account"
-                value={entry.account}
+                aria-label="debit account"
+                value={entry.debitAccount}
                 onChange={(e) =>
                   updateEntry(index, (entry) => ({
                     ...entry,
-                    account: e.target.value,
+                    debitAccount: e.target.value,
+                  }))
+                }
+              />
+              <input
+                aria-label="credit account"
+                value={entry.creditAccount}
+                onChange={(e) =>
+                  updateEntry(index, (entry) => ({
+                    ...entry,
+                    creditAccount: e.target.value,
                   }))
                 }
               />
               <AmountInput
-                aria-label="debit"
-                value={entry.debit}
-                onUpdate={(debit) =>
-                  updateEntry(index, (entry) => ({ ...entry, debit }))
-                }
-              />
-              <AmountInput
-                aria-label="credit"
-                value={entry.credit}
+                aria-label="amount"
+                value={entry.amount}
                 onUpdate={(credit) =>
-                  updateEntry(index, (entry) => ({ ...entry, credit }))
+                  updateEntry(index, (entry) => ({ ...entry, amount: credit }))
                 }
               />
             </div>
@@ -86,14 +89,19 @@ export default function BookkeepingDemo() {
 
 function Summary({ state }: { state: State }) {
   const summary = new Map<string, Amount>()
-  for (const entry of state.entries) {
-    let balance = summary.get(entry.account) || 0
-    balance += entry.debit - entry.credit
+
+  function accrue(account: string, amount: Amount) {
+    const balance = amount + (summary.get(account) || 0)
     if (balance === 0) {
-      summary.delete(entry.account)
+      summary.delete(account)
     } else {
-      summary.set(entry.account, balance)
+      summary.set(account, balance)
     }
+  }
+
+  for (const entry of state.entries) {
+    accrue(entry.debitAccount, entry.amount)
+    accrue(entry.creditAccount, -entry.amount)
   }
 
   return (
