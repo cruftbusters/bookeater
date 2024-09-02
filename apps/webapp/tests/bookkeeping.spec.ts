@@ -13,7 +13,7 @@ test('summarize credit movement', async ({ page }) => {
   await record0.getByLabel('credit account').fill('asset')
   await record0.getByLabel('amount').fill('100')
 
-  page.getByRole('button', { name: 'add entry' }).click()
+  await page.getByRole('button', { name: 'add entry' }).click()
 
   const record1 = page.getByLabel('entry').nth(1)
   await record1.getByLabel('debit account').fill('expense')
@@ -23,4 +23,9 @@ test('summarize credit movement', async ({ page }) => {
   await expect(summary).toContainText(`liability: debit 50`)
   await expect(summary).toContainText(`asset: credit 100`)
   await expect(summary).toContainText(`expense: debit 50`)
+
+  await record1.getByRole('button', { name: 'delete' }).click()
+
+  await expect(summary).toContainText(`liability: debit 100`)
+  await expect(summary).toContainText(`asset: credit 100`)
 })

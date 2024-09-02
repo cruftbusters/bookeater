@@ -12,7 +12,10 @@ export function useJournal() {
       entries.map((entry) => (entry.key === key ? update(entry) : entry)),
     )
 
-  return { entries, addEntry, updateEntry }
+  const deleteEntry = (key: string) =>
+    setEntries((entries) => entries.filter((entry) => entry.key !== key))
+
+  return { entries, addEntry, updateEntry, deleteEntry }
 }
 
 function defaultEntry(): Entry {
