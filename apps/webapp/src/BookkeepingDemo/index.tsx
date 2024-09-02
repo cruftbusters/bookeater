@@ -2,6 +2,7 @@ import { useState } from 'react'
 import rootStyles from '../index.module.scss'
 import localStyles from './index.module.scss'
 import cn from '../cn'
+import { Amount, Entry } from './types'
 
 const styles = Object.assign(rootStyles, localStyles)
 
@@ -12,13 +13,6 @@ function defaultEntry(): Entry {
     creditAccount: '',
     amount: 0,
   }
-}
-
-type Entry = {
-  key: string
-  debitAccount: string
-  creditAccount: string
-  amount: Amount
 }
 
 type State = { entries: Entry[] }
@@ -133,8 +127,6 @@ function Summary({ state }: { state: State }) {
     </div>
   )
 }
-
-type Amount = number
 
 function AmountInput({
   value,
