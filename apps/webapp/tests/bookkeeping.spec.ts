@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test('summarize credit movement', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/')
 
-  await expect(page.getByRole('heading', { name: 'bookkeeping demo' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'bookkeeping demo' })).toBeVisible()
 
   const summary = page.getByText('summary')
   await expect(summary).toContainText(`nothing to report :)`)
@@ -23,4 +23,4 @@ test('summarize credit movement', async ({ page }) => {
   await expect(summary).toContainText(`liability: debit 50`)
   await expect(summary).toContainText(`asset: credit 100`)
   await expect(summary).toContainText(`expense: debit 50`)
-});
+})
