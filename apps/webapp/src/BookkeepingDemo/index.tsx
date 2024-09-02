@@ -5,13 +5,21 @@ import cn from '../cn'
 
 const styles = Object.assign(rootStyles, localStyles)
 
-const defaultEntry = () => ({
-  debitAccount: '',
-  creditAccount: '',
-  amount: 0,
-})
+function defaultEntry(): Entry {
+  return {
+    key: crypto.randomUUID(),
+    debitAccount: '',
+    creditAccount: '',
+    amount: 0,
+  }
+}
 
-type Entry = { debitAccount: string; creditAccount: string; amount: Amount }
+type Entry = {
+  key: string
+  debitAccount: string
+  creditAccount: string
+  amount: Amount
+}
 
 type State = { entries: Entry[] }
 
@@ -23,10 +31,10 @@ export default function BookkeepingDemo() {
   const addEntry = (entry: Entry) =>
     setState((state) => ({ entries: state.entries.concat([entry]) }))
 
-  const updateEntry = (index: number, update: (entry: Entry) => Entry) =>
+  const updateEntry = (key: string, update: (entry: Entry) => Entry) =>
     setState((state) => ({
-      entries: state.entries.map((entry, checkIndex) =>
-        checkIndex === index ? update(entry) : entry,
+      entries: state.entries.map((entry) =>
+        entry.key === key ? update(entry) : entry,
       ),
     }))
 
@@ -42,13 +50,17 @@ export default function BookkeepingDemo() {
             <span>credit account</span>
             <span>amount</span>
           </div>
-          {state.entries.map((entry, key) => (
-            <div aria-label="entry" key={key} className={cn(styles.entry)}>
+          {state.entries.map((entry) => (
+            <div
+              aria-label="entry"
+              key={entry.key}
+              className={cn(styles.entry)}
+            >
               <input
                 aria-label="debit account"
                 value={entry.debitAccount}
                 onChange={(e) =>
-                  updateEntry(key, (entry) => ({
+                  updateEntry(entry.key, (entry) => ({
                     ...entry,
                     debitAccount: e.target.value,
                   }))
@@ -58,7 +70,7 @@ export default function BookkeepingDemo() {
                 aria-label="credit account"
                 value={entry.creditAccount}
                 onChange={(e) =>
-                  updateEntry(key, (entry) => ({
+                  updateEntry(entry.key, (entry) => ({
                     ...entry,
                     creditAccount: e.target.value,
                   }))
@@ -68,7 +80,10 @@ export default function BookkeepingDemo() {
                 aria-label="amount"
                 value={entry.amount}
                 onUpdate={(credit) =>
-                  updateEntry(key, (entry) => ({ ...entry, amount: credit }))
+                  updateEntry(entry.key, (entry) => ({
+                    ...entry,
+                    amount: credit,
+                  }))
                 }
               />
             </div>
