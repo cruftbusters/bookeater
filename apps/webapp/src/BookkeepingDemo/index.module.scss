@@ -1,13 +1,15 @@
 @import '../index.module.scss';
 
+$count: 4;
+
 .book_grid {
   display: inline-grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: repeat($count, auto);
   grid-gap: $gap_half;
 }
 
 .book_grid > * {
-  grid-column: 1 / 4;
+  grid-column: 1 / calc($count + 1);
 }
 
 .entry {

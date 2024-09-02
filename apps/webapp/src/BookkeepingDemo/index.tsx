@@ -8,7 +8,7 @@ import { useJournal } from './useJournal'
 const styles = Object.assign(rootStyles, localStyles)
 
 export default function BookkeepingDemo() {
-  const { entries, addEntry, updateEntry } = useJournal()
+  const { entries, addEntry, updateEntry, deleteEntry } = useJournal()
 
   return (
     <>
@@ -58,6 +58,12 @@ export default function BookkeepingDemo() {
                   }))
                 }
               />
+              <button
+                aria-label={'delete'}
+                onClick={() => deleteEntry(entry.key)}
+              >
+                &times;
+              </button>
             </div>
           ))}
           <button onClick={() => addEntry()} className={cn(styles.add_entry)}>
