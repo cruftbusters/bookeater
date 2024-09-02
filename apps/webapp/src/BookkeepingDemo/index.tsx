@@ -5,11 +5,11 @@ import cn from '../cn'
 
 const styles = Object.assign(rootStyles, localStyles)
 
-const defaultEntry = {
+const defaultEntry = () => ({
   debitAccount: '',
   creditAccount: '',
   amount: 0,
-}
+})
 
 type Entry = { debitAccount: string; creditAccount: string; amount: Amount }
 
@@ -17,12 +17,11 @@ type State = { entries: Entry[] }
 
 export default function BookkeepingDemo() {
   const [state, setState] = useState<State>({
-    entries: [defaultEntry],
+    entries: [defaultEntry()],
   })
 
-  const addEntry = (entry: Entry) => {
-    return setState((state) => ({ entries: state.entries.concat([entry]) }))
-  }
+  const addEntry = (entry: Entry) =>
+    setState((state) => ({ entries: state.entries.concat([entry]) }))
 
   const updateEntry = (index: number, update: (entry: Entry) => Entry) =>
     setState((state) => ({
@@ -43,13 +42,13 @@ export default function BookkeepingDemo() {
             <span>credit account</span>
             <span>amount</span>
           </div>
-          {state.entries.map((entry, index) => (
-            <div aria-label="entry" key={index} className={cn(styles.entry)}>
+          {state.entries.map((entry, key) => (
+            <div aria-label="entry" key={key} className={cn(styles.entry)}>
               <input
                 aria-label="debit account"
                 value={entry.debitAccount}
                 onChange={(e) =>
-                  updateEntry(index, (entry) => ({
+                  updateEntry(key, (entry) => ({
                     ...entry,
                     debitAccount: e.target.value,
                   }))
@@ -59,7 +58,7 @@ export default function BookkeepingDemo() {
                 aria-label="credit account"
                 value={entry.creditAccount}
                 onChange={(e) =>
-                  updateEntry(index, (entry) => ({
+                  updateEntry(key, (entry) => ({
                     ...entry,
                     creditAccount: e.target.value,
                   }))
@@ -69,13 +68,13 @@ export default function BookkeepingDemo() {
                 aria-label="amount"
                 value={entry.amount}
                 onUpdate={(credit) =>
-                  updateEntry(index, (entry) => ({ ...entry, amount: credit }))
+                  updateEntry(key, (entry) => ({ ...entry, amount: credit }))
                 }
               />
             </div>
           ))}
           <button
-            onClick={() => addEntry(defaultEntry)}
+            onClick={() => addEntry(defaultEntry())}
             className={cn(styles.add_entry)}
           >
             add entry
