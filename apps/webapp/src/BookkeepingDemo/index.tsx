@@ -3,34 +3,12 @@ import rootStyles from '../index.module.scss'
 import localStyles from './index.module.scss'
 import cn from '../cn'
 import { Amount, Entry } from './types'
+import { useJournal } from './useJournal'
 
 const styles = Object.assign(rootStyles, localStyles)
 
-function defaultEntry(): Entry {
-  return {
-    key: crypto.randomUUID(),
-    debitAccount: '',
-    creditAccount: '',
-    amount: 0,
-  }
-}
-
-type State = { entries: Entry[] }
-
 export default function BookkeepingDemo() {
-  const [state, setState] = useState<State>({
-    entries: [defaultEntry()],
-  })
-
-  const addEntry = (entry: Entry) =>
-    setState((state) => ({ entries: state.entries.concat([entry]) }))
-
-  const updateEntry = (key: string, update: (entry: Entry) => Entry) =>
-    setState((state) => ({
-      entries: state.entries.map((entry) =>
-        entry.key === key ? update(entry) : entry,
-      ),
-    }))
+  const { entries, addEntry, updateEntry } = useJournal()
 
   return (
     <>
@@ -44,7 +22,7 @@ export default function BookkeepingDemo() {
             <span>credit account</span>
             <span>amount</span>
           </div>
-          {state.entries.map((entry) => (
+          {entries.map((entry) => (
             <div
               aria-label="entry"
               key={entry.key}
@@ -82,20 +60,17 @@ export default function BookkeepingDemo() {
               />
             </div>
           ))}
-          <button
-            onClick={() => addEntry(defaultEntry())}
-            className={cn(styles.add_entry)}
-          >
+          <button onClick={() => addEntry()} className={cn(styles.add_entry)}>
             add entry
           </button>
-          <Summary state={state} />
+          <Summary entries={entries} />
         </div>
       </div>
     </>
   )
 }
 
-function Summary({ state }: { state: State }) {
+function Summary({ entries }: { entries: Entry[] }) {
   const summary = new Map<string, Amount>()
 
   function accrue(account: string, amount: Amount) {
@@ -107,7 +82,7 @@ function Summary({ state }: { state: State }) {
     }
   }
 
-  for (const entry of state.entries) {
+  for (const entry of entries) {
     accrue(entry.debitAccount, entry.amount)
     accrue(entry.creditAccount, -entry.amount)
   }
