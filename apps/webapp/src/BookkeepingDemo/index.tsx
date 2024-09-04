@@ -18,9 +18,11 @@ export default function BookkeepingDemo() {
       <div className={cn(styles.gap_margin)}>
         <div className={cn(styles.book_grid)}>
           <div className={cn(styles.entry)}>
+            <span>date</span>
             <span>debit account</span>
             <span>credit account</span>
             <span>amount</span>
+            <span>memo</span>
           </div>
           {entries.map((entry) => (
             <div
@@ -28,6 +30,16 @@ export default function BookkeepingDemo() {
               key={entry.key}
               className={cn(styles.entry)}
             >
+              <input
+                aria-label="date"
+                value={entry.date}
+                onChange={(e) =>
+                  updateEntry(entry.key, (entry) => ({
+                    ...entry,
+                    date: e.target.value,
+                  }))
+                }
+              />
               <input
                 aria-label="debit account"
                 value={entry.debitAccount}
@@ -55,6 +67,16 @@ export default function BookkeepingDemo() {
                   updateEntry(entry.key, (entry) => ({
                     ...entry,
                     amount: credit,
+                  }))
+                }
+              />
+              <input
+                aria-label="memo"
+                value={entry.memo}
+                onChange={(e) =>
+                  updateEntry(entry.key, (entry) => ({
+                    ...entry,
+                    memo: e.target.value,
                   }))
                 }
               />

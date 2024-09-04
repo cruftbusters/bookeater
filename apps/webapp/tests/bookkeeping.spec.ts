@@ -34,9 +34,11 @@ test('persist journal', async ({ page }) => {
   await page.goto('/')
 
   const record0 = page.getByLabel('entry').nth(0)
+  await record0.getByLabel('date').fill('2024-01-01')
   await record0.getByLabel('debit account').fill('liability')
   await record0.getByLabel('credit account').fill('asset')
   await record0.getByLabel('amount').fill('100')
+  await record0.getByLabel('memo').fill('the memo')
 
   await page.getByRole('button', { name: 'add entry' }).click()
 
@@ -47,6 +49,9 @@ test('persist journal', async ({ page }) => {
   await record1.getByRole('button', { name: 'delete' }).click()
 
   await page.reload()
+
+  await expect(record0.getByLabel('date')).toHaveValue('2024-01-01')
+  await expect(record0.getByLabel('memo')).toHaveValue('the memo')
 
   const summary = page.getByText('summary')
 

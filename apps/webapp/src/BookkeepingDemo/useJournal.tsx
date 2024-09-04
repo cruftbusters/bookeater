@@ -118,8 +118,10 @@ export function useJournal() {
 function defaultEntry(): Entry {
   return {
     key: crypto.randomUUID(),
+    date: '',
     debitAccount: '',
     creditAccount: '',
     amount: 0,
+    memo: '',
   }
 }
