@@ -55,7 +55,7 @@ export function useJournal() {
   }
 
   const updateEntry = async (key: string, update: (entry: Entry) => Entry) => {
-    const updatedEntry = await new Promise<Entry>((resolve) =>
+    const entry = await new Promise<Entry>((resolve) =>
       setEntries((entries) =>
         entries.map((entry) => {
           if (entry.key === key) {
@@ -68,7 +68,7 @@ export function useJournal() {
       ),
     )
 
-    await database.entries.put(updatedEntry)
+    await database.entries.put(entry)
   }
 
   const deleteEntry = async (key: string) => {
