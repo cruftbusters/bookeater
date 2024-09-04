@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid'
+
 export type Amount = number
 
 export interface Entry {
@@ -15,7 +17,7 @@ export interface LinkedEntry extends Entry {
 
 export function entry(update: ((entry: Entry) => Entry) = identity): Entry {
   return update({
-    key: crypto.randomUUID(),
+    key: uuidv4(),
     date: '',
     debitAccount: '',
     creditAccount: '',
