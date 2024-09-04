@@ -5,7 +5,7 @@ test('create update delete', async ({ page }) => {
 
   await expect(page.getByRole('heading', { name: 'bookkeeping demo' })).toBeVisible()
 
-  const summary = page.getByText('summary')
+  const summary = page.getByText('summary:')
   await expect(summary).toContainText(`nothing to report :)`)
 
   const record0 = page.getByLabel('entry').nth(0)
@@ -53,8 +53,21 @@ test('persist journal', async ({ page }) => {
   await expect(record0.getByLabel('date')).toHaveValue('2024-01-01')
   await expect(record0.getByLabel('memo')).toHaveValue('the memo')
 
-  const summary = page.getByText('summary')
+  const summary = page.getByText('summary:')
 
   await expect(summary).toContainText(`liability: debit 100`)
   await expect(summary).toContainText(`asset: credit 100`)
+})
+
+test('load sample journal', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'load sample journal' }).click()
+  await page.getByRole('button', { name: 'are you sure' }).click()
+
+  await page.reload()
+
+  const summary = page.getByText('summary:')
+
+  await expect(summary).toContainText(`income: credit 7500`)
 })

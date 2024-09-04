@@ -1,5 +1,5 @@
 import Dexie, { EntityTable } from 'dexie'
-import { Entry } from './types'
+import { LinkedEntry } from './types'
 
 const database = new Dexie('bookkeeping')
 
@@ -11,6 +11,6 @@ export interface Journal {
 database.version(1).stores({ entries: 'key', journals: 'key' })
 
 export default database as Dexie & {
-  entries: EntityTable<Entry, 'key'>,
+  entries: EntityTable<LinkedEntry, 'key'>,
   journals: EntityTable<Journal, 'key'>,
 }

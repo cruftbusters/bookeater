@@ -2,19 +2,46 @@ import { useState } from 'react'
 import rootStyles from '../index.module.scss'
 import localStyles from './index.module.scss'
 import cn from '../cn'
-import { Amount, Entry } from './types'
+import { Amount, entry, Entry } from './types'
 import { useJournal } from './useJournal'
 
 const styles = Object.assign(rootStyles, localStyles)
 
 export default function BookkeepingDemo() {
-  const { entries, addEntry, updateEntry, deleteEntry } = useJournal()
+  const { entries, appendEntry, updateEntry, deleteEntry, setEntries } =
+    useJournal()
+
+  const [pendingConfirm, setPendingConfirm] = useState(false)
 
   return (
     <>
       <h1 className={cn(styles.dull, styles.header1, styles.gap_padding)}>
         Bookkeeping Demo
       </h1>
+      <div className={cn(styles.gap_margin)}>
+        This is an accrual-style bookkeeping demo. The journal is composed of
+        editable transactions. The summary presents the chart of accounts and
+        account balances resulting from the accrual of the journal entries.
+      </div>
+      <div
+        hidden={pendingConfirm}
+        className={cn(styles.gap_margin)}
+        onClick={() => setPendingConfirm((b) => !b)}
+      >
+        <button className={cn(styles.gap_padding)}>load sample journal</button>
+      </div>
+      <div hidden={!pendingConfirm} className={cn(styles.gap_margin)}>
+        <button
+          className={cn(styles.gap_padding)}
+          onClick={async () => {
+            await setEntries(sampleJournal)
+            setPendingConfirm(false)
+          }}
+        >
+          are you sure you want to abandon your current journal to load the
+          sample journal?
+        </button>
+      </div>
       <div className={cn(styles.gap_margin)}>
         <div className={cn(styles.book_grid)}>
           <div className={cn(styles.entry)}>
@@ -88,7 +115,10 @@ export default function BookkeepingDemo() {
               </button>
             </div>
           ))}
-          <button onClick={() => addEntry()} className={cn(styles.add_entry)}>
+          <button
+            onClick={() => appendEntry(entry())}
+            className={cn(styles.add_entry)}
+          >
             add entry
           </button>
           <Summary entries={entries} />
@@ -97,6 +127,57 @@ export default function BookkeepingDemo() {
     </>
   )
 }
+
+const sampleJournal = [
+  entry((e) => ({
+    ...e,
+    date: '2024-01-01',
+    debitAccount: 'expense:insurance',
+    creditAccount: 'liability:reimburse owner payable',
+    amount: 500,
+    memo: 'owner payed for biz general liability insurance to later be reimbursed',
+  })),
+  entry((e) => ({
+    ...e,
+    date: '2024-02-01',
+    debitAccount: 'assets:invoice receivable',
+    creditAccount: 'income',
+    amount: 7500,
+    memo: 'invoice #00000 net 30 due',
+  })),
+  entry((e) => ({
+    ...e,
+    date: '2024-03-01',
+    debitAccount: 'assets:credit union checking account',
+    creditAccount: 'assets:invoice receivable',
+    amount: 7500,
+    memo: 'invoice #00000 net 30 paid',
+  })),
+  entry((e) => ({
+    ...e,
+    date: '2024-04-01',
+    debitAccount: 'expense:net pay to employee',
+    creditAccount: 'assets:credit union checking account',
+    amount: 2000,
+    memo: 'quarterly payroll',
+  })),
+  entry((e) => ({
+    ...e,
+    date: '2024-04-01',
+    debitAccount: 'expense:federal payroll tax',
+    creditAccount: 'asset:credit union checking account',
+    amount: 400,
+    memo: 'quarterly payroll',
+  })),
+  entry((e) => ({
+    ...e,
+    date: '2024-04-01',
+    debitAccount: 'expense:simplified employee pension',
+    creditAccount: 'liability:simplified employee pension payable',
+    amount: 500,
+    memo: 'quarterly payroll',
+  })),
+]
 
 function Summary({ entries }: { entries: Entry[] }) {
   const summary = new Map<string, Amount>()

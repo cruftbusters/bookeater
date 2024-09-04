@@ -1,15 +1,28 @@
 import { useEffect, useState } from 'react'
-import { Entry } from './types'
+import { entry, Entry, LinkedEntry } from './types'
 import database from './DexieDatabase'
 
 export function useJournal() {
   const [entries, setEntries] = useState<Entry[]>([])
 
-  async function reset() {
-    const entry = defaultEntry()
-    await database.entries.put(entry)
-    await database.journals.put({ key: 'default', entryKey: entry.key })
-    setEntries([entry])
+  async function persistAndSetEntries(
+    entries: Array<Entry> = [entry()],
+  ) {
+    const linkedEntries = new Array<LinkedEntry>()
+
+    let parentKey
+    for (const entry of entries) {
+      linkedEntries.push({ ...entry, parentKey })
+      parentKey = entry.key
+    }
+
+    await Promise.all(linkedEntries.map((entry) => database.entries.put(entry)))
+    await database.journals.put({
+      key: 'default',
+      entryKey: entries[entries.length - 1]?.key,
+    })
+
+    setEntries(entries)
   }
 
   useEffect(() => {
@@ -32,20 +45,20 @@ export function useJournal() {
           }
         }
 
-        await reset()
+        await persistAndSetEntries()
       }
     }
 
     loadJournal()
   }, [])
 
-  const addEntry = async (entry = defaultEntry()) => {
+  const appendEntry = async (entry :Entry ) => {
     const linkedEntry = await new Promise<Entry>((resolve) => {
       setEntries((entries) => {
         const parentKey =
           entries.length > 0 ? entries[entries.length - 1].key : undefined
-        entry = { ...entry, parentKey }
-        resolve(entry)
+        const linkedEntry: LinkedEntry = { ...entry, parentKey }
+        resolve(linkedEntry)
         return entries.concat([entry])
       })
     })
@@ -68,11 +81,12 @@ export function useJournal() {
       ),
     )
 
-    await database.entries.put(entry)
+    const linkedEntry = await database.entries.get(entry.key)
+    await database.entries.put({ ...entry, parentKey: linkedEntry?.key })
   }
 
   const deleteEntry = async (key: string) => {
-    const entries = await new Promise<Array<Entry>>((resolve) =>
+    const entries = await new Promise<Array<LinkedEntry>>((resolve) =>
       setEntries((entries) => {
         let index = 0
 
@@ -86,7 +100,7 @@ export function useJournal() {
         }
 
         for (let entry = entries[++index]; entry; entry = entries[++index]) {
-          const update: Entry = {
+          const update: LinkedEntry = {
             ...entry,
             parentKey:
               results.length > 0 ? results[results.length - 1].key : undefined,
@@ -108,20 +122,15 @@ export function useJournal() {
         entryKey: entries[entries.length - 1].key,
       })
     } else {
-      await reset()
+      await persistAndSetEntries()
     }
   }
 
-  return { entries, addEntry, updateEntry, deleteEntry }
-}
-
-function defaultEntry(): Entry {
   return {
-    key: crypto.randomUUID(),
-    date: '',
-    debitAccount: '',
-    creditAccount: '',
-    amount: 0,
-    memo: '',
+    entries,
+    appendEntry,
+    updateEntry,
+    deleteEntry,
+    setEntries: persistAndSetEntries,
   }
 }
