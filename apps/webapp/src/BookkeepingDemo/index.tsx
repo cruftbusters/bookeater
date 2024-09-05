@@ -2,8 +2,9 @@ import { useState } from 'react'
 import rootStyles from '../index.module.scss'
 import localStyles from './index.module.scss'
 import cn from '../cn'
-import { Amount, entry, Entry } from './types'
+import { Amount, entry } from './types'
 import { useJournal } from './useJournal'
+import { Summary } from './Summary'
 
 const styles = Object.assign(rootStyles, localStyles)
 
@@ -179,39 +180,6 @@ const sampleJournal = [
   })),
 ]
 
-function Summary({ entries }: { entries: Entry[] }) {
-  const summary = new Map<string, Amount>()
-
-  function accrue(account: string, amount: Amount) {
-    const balance = amount + (summary.get(account) || 0)
-    if (balance === 0) {
-      summary.delete(account)
-    } else {
-      summary.set(account, balance)
-    }
-  }
-
-  for (const entry of entries) {
-    accrue(entry.debitAccount, entry.amount)
-    accrue(entry.creditAccount, -entry.amount)
-  }
-
-  return (
-    <div>
-      summary:
-      {summary.size > 0 ? (
-        Array.from(summary.entries()).map(([account, balance]) => (
-          <div key={account}>
-            {account}: <FormatAmount>{balance}</FormatAmount>
-          </div>
-        ))
-      ) : (
-        <div>nothing to report :)</div>
-      )}
-    </div>
-  )
-}
-
 function AmountInput({
   value,
   onUpdate,
@@ -240,9 +208,4 @@ function AmountInput({
       }}
     />
   )
-}
-
-function FormatAmount({ children: amount }: { children: Amount }) {
-  const label = amount < 0 ? 'credit' : 'debit'
-  return `${label} ${Math.abs(amount)}`
 }
