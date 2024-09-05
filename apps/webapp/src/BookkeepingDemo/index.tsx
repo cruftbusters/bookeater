@@ -117,7 +117,7 @@ export default function BookkeepingDemo() {
           ))}
           <button
             onClick={() => appendEntry(entry())}
-            className={cn(styles.add_entry)}
+            className={cn(styles.add_entry, styles.gap_padding)}
           >
             add entry
           </button>
