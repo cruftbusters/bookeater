@@ -165,7 +165,7 @@ const sampleJournal = [
     ...e,
     date: '2024-04-01',
     debitAccount: 'expense:federal payroll tax',
-    creditAccount: 'asset:credit union checking account',
+    creditAccount: 'assets:credit union checking account',
     amount: 400,
     memo: 'quarterly payroll',
   })),
