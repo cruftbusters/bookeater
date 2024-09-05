@@ -4,7 +4,7 @@ import localStyles from './index.module.scss'
 import cn from '../cn'
 import { Amount, entry } from './types'
 import { useJournal } from './useJournal'
-import { Summary } from './Summary'
+import { SummaryContainer as Summary } from './Summary'
 
 const styles = Object.assign(rootStyles, localStyles)
 
