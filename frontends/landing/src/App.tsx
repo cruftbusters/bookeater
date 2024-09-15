@@ -12,7 +12,6 @@ function Planning() {
       <h1>planning</h1>
       <h2>todo</h2>
       <ul>
-        <li>playwright</li>
         <li>
           {
             "add timekeeping { assignment spans of ( { start stop } duration() ) }"
