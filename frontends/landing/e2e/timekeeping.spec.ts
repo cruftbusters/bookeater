@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-test('first shift', async ({ page }) => {
+test('manual timekeeping', async ({ page }) => {
   await page.goto('http://localhost:5173/')
 
   await page.getByRole('button', { name: 'add new entry' }).click()
@@ -14,11 +14,15 @@ test('first shift', async ({ page }) => {
   await page.getByLabel('punch start').nth(1).fill('2024-01-01 12:30:00')
   await page.getByLabel('punch end').nth(1).fill('2024-01-01 16:15:00')
   await expect(page.getByLabel('duration').nth(1)).toHaveValue('3h45m')
+})
+
+test('punch-button timekeeping', async ({ page }) => {
+  await page.goto('http://localhost:5173/')
 
   await page.getByRole('button', { name: 'punch in' }).click()
   await page.getByRole('button', { name: 'punch out' }).click()
 
-  await expect(page.getByLabel('punch start').nth(2)).not.toBeEmpty()
-  await expect(page.getByLabel('punch end').nth(2)).not.toBeEmpty()
-  await expect(page.getByLabel('duration').nth(2)).toHaveValue('0s')
+  await expect(page.getByLabel('punch start')).not.toBeEmpty()
+  await expect(page.getByLabel('punch end')).not.toBeEmpty()
+  await expect(page.getByLabel('duration')).toHaveValue('0s')
 })
