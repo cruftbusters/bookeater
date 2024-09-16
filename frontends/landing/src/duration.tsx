@@ -25,7 +25,7 @@ export function duration(entry: Entry): string {
     result += `${delta_minutes}m`
   }
   const delta_seconds = delta % 60
-  if (delta_seconds !== 0) {
+  if (delta_seconds !== 0 || result === '') {
     result += `${delta_seconds}s`
   }
   return result

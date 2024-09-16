@@ -17,4 +17,11 @@ test('first shift', async ({ page }) => {
   await page.getByLabel('punch start').nth(1).fill('2024-01-01 12:30:00')
   await page.getByLabel('punch end').nth(1).fill('2024-01-01 16:15:00')
   await expect(page.getByLabel('duration').nth(1)).toHaveValue('3h45m')
+
+  await page.getByRole('button', { name: 'punch in' }).click()
+  await page.getByRole('button', { name: 'punch out' }).click()
+
+  await expect(page.getByLabel('punch start').nth(2)).not.toBeEmpty()
+  await expect(page.getByLabel('punch end').nth(2)).not.toBeEmpty()
+  await expect(page.getByLabel('duration').nth(2)).toHaveValue('0s')
 })

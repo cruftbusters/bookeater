@@ -58,4 +58,12 @@ describe(duration, () => {
     const expected = 'NaN'
     expect(actual).toBe(expected)
   })
+  test('start equals end', () => {
+    const actual = duration({
+      start: '2024-01-01 00:00:00',
+      end: '2024-01-01 00:00:00',
+    })
+    const expected = '0s'
+    expect(actual).toBe(expected)
+  })
 })
