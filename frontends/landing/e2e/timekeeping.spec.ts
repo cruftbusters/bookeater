@@ -26,3 +26,16 @@ test('punch-button timekeeping', async ({ page }) => {
   await expect(page.getByLabel('punch end')).not.toBeEmpty()
   await expect(page.getByLabel('duration')).toHaveValue('0s')
 })
+
+test('persist timekeeping entries', async ({ page }) => {
+  await page.goto('http://localhost:5173/')
+
+  await page.getByRole('button', { name: 'add new entry' }).click()
+
+  await page.getByLabel('punch start').fill('2024-01-01 08:00:00')
+  await page.getByLabel('punch end').fill('2024-01-01 12:00:00')
+
+  await page.reload()
+
+  await expect(page.getByLabel('duration')).toHaveValue('4h')
+})

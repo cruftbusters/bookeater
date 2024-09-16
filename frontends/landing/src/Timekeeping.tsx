@@ -1,88 +1,55 @@
-import { useState } from 'react'
 import { duration } from './duration'
 import { v4 as uuidv4 } from 'uuid'
+import Dexie, { EntityTable } from 'dexie'
+import { useLiveQuery } from 'dexie-react-hooks'
 
-export type Entry = { start: string; end: string }
+export type Entry = { key: string; start: string; end: string }
+
+const database = new Dexie('bookeater-landing') as Dexie & {
+  entries: EntityTable<Entry, 'key'>
+}
+
+database.version(1).stores({
+  entries: 'key, start',
+})
 
 export function Timekeeping() {
-  const [entries, setEntries] = useState<Map<string, Entry>>(new Map())
+  const entries = useLiveQuery(() => database.entries.toArray())
+  const head = useLiveQuery(() => database.entries.orderBy('start').last())
 
   function addDefault() {
-    setEntries((entries) =>
-      new Map(entries).set(uuidv4(), {
-        start: '',
-        end: '',
-      }),
-    )
-  }
-
-  function getLastKey() {
-    let lastKey
-    const keys = entries.keys()
-
-    for (const key of keys) {
-      lastKey = key
-    }
-
-    return lastKey
+    database.entries.put({ key: uuidv4(), start: '', end: '' })
   }
 
   function punchIn() {
-    setEntries((entries) =>
-      new Map(entries).set(uuidv4(), {
-        start: getDateTime(),
-        end: '',
-      }),
-    )
+    database.entries.put({ key: uuidv4(), start: getDateTime(), end: '' })
   }
 
   function punchOut() {
-    setEntries((entries) => {
-      const lastKey = getLastKey()
-      if (lastKey) {
-        const last = entries.get(lastKey)
-        if (last) {
-          return new Map(entries).set(lastKey, {
-            ...last,
-            end: getDateTime(),
-          })
-        }
-      }
-      throw Error('no entries to punch out')
-    })
-  }
-
-  function isPunchedIn() {
-    return entries.get(getLastKey() || '')?.end === ''
+    if (head) {
+      database.entries.put({ ...head, end: getDateTime() })
+    }
   }
 
   return (
     <div className={'large_margin_around'}>
       <h1>timekeeping</h1>
       <button onClick={() => addDefault()}>add new entry</button>
-      {isPunchedIn() ? (
+      {head?.end === '' ? (
         <button onClick={() => punchOut()}>punch out</button>
       ) : (
         <button onClick={() => punchIn()}>punch in</button>
       )}
-      {Array.from(entries.entries()).map(([key, entry]) => (
-        <div key={key}>
+      {entries?.map((entry) => (
+        <div key={entry.key}>
           <TextField
             label={'punch start'}
-            onChange={(start) =>
-              setEntries((entries) =>
-                new Map(entries).set(key, { ...entry, start }),
-              )
-            }
+            onChange={(start) => database.entries.put({ ...entry, start })}
             value={entry.start}
           />
           <TextField
             label={'punch end'}
-            onChange={(end) =>
-              setEntries((entries) =>
-                new Map(entries).set(key, { ...entry, end }),
-              )
-            }
+            onChange={(end) => database.entries.put({ ...entry, end })}
             value={entry.end}
           />
           <label>

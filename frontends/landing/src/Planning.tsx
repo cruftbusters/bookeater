@@ -4,7 +4,6 @@ export function Planning() {
       <h1>planning</h1>
       <h2>todo</h2>
       <ul>
-        <li>save entries</li>
         <li>align entries to grid and move labels to headers</li>
         <li>summarize total duration</li>
         <li>add rate field and total amount</li>
