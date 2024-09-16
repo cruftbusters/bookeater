@@ -71,3 +71,15 @@ button:focus-visible {
 .large_margin_around {
   margin: 1em;
 }
+
+.timekeepingGrid {
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
+  grid-gap: 0.25em;
+}
+
+.timekeepingGridRow {
+  display: grid;
+  grid-column: 1 / 4;
+  grid-template-columns: subgrid;
+}

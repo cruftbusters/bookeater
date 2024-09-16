@@ -2,6 +2,7 @@ import { duration } from './duration'
 import { v4 as uuidv4 } from 'uuid'
 import Dexie, { EntityTable } from 'dexie'
 import { useLiveQuery } from 'dexie-react-hooks'
+import Styles from './index.css'
 
 export type Entry = { key: string; start: string; end: string }
 
@@ -34,48 +35,46 @@ export function Timekeeping() {
   return (
     <div className={'large_margin_around'}>
       <h1>timekeeping</h1>
-      <button onClick={() => addDefault()}>add new entry</button>
-      {head?.end === '' ? (
-        <button onClick={() => punchOut()}>punch out</button>
-      ) : (
-        <button onClick={() => punchIn()}>punch in</button>
-      )}
-      {entries?.map((entry) => (
-        <div key={entry.key}>
-          <TextField
-            label={'punch start'}
-            onChange={(start) => database.entries.put({ ...entry, start })}
-            value={entry.start}
-          />
-          <TextField
-            label={'punch end'}
-            onChange={(end) => database.entries.put({ ...entry, end })}
-            value={entry.end}
-          />
-          <label>
-            duration
-            <input readOnly value={duration(entry)} />
-          </label>
-        </div>
-      ))}
-    </div>
-  )
-}
+      <div>
+        <button onClick={() => addDefault()}>add new entry</button>
+        {head?.end === '' ? (
+          <button onClick={() => punchOut()}>punch out</button>
+        ) : (
+          <button onClick={() => punchIn()}>punch in</button>
+        )}
+      </div>
 
-function TextField({
-  label,
-  onChange,
-  value = '',
-}: {
-  label: string
-  onChange: (value: string) => void
-  value?: string
-}) {
-  return (
-    <label>
-      {label}
-      <input onChange={(e) => onChange(e.target.value)} value={value} />
-    </label>
+      {entries ? (
+        <div className={'timekeepingGrid'}>
+          <div className={'timekeepingGridRow'}>
+            <span>punch start</span>
+            <span>punch end</span>
+            <span>duration</span>
+          </div>
+          {entries.map((entry) => (
+            <div key={entry.key} className={'timekeepingGridRow'}>
+              <input
+                aria-label={'punch start'}
+                onChange={(e) =>
+                  database.entries.put({ ...entry, start: e.target.value })
+                }
+                value={entry.start}
+              />
+              <input
+                aria-label={'punch end'}
+                onChange={(e) =>
+                  database.entries.put({ ...entry, end: e.target.value })
+                }
+                value={entry.end}
+              />
+              <input aria-label={'duration'} readOnly value={duration(entry)} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        'loading entries'
+      )}
+    </div>
   )
 }
 
