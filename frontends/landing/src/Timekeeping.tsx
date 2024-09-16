@@ -59,14 +59,6 @@ export function Timekeeping() {
   return (
     <div className={'large_margin_around'}>
       <h1>timekeeping</h1>
-      <label>
-        assignment name
-        <input />
-      </label>
-      <label>
-        timezone
-        <input />
-      </label>
       <button onClick={() => addDefault()}>add new entry</button>
       {isPunchedIn() ? (
         <button onClick={() => punchOut()}>punch out</button>
