@@ -64,11 +64,8 @@ export function Timekeeping() {
     }))
   }
 
-  function punchOut() {
-    if (head) {
-      database.entries.put({ ...head, end: getDateTime() })
-    }
-  }
+  const punchOut = (entry: Entry) =>
+    database.entries.put({ ...entry, end: getDateTime() })
 
   async function deleteEntry(entry: Entry) {
     if (head?.key === entry.key) {
@@ -98,11 +95,6 @@ export function Timekeeping() {
       <h1>timekeeping</h1>
       <div>
         <button onClick={() => addEntry()}>add new entry</button>
-        {head?.end === '' ? (
-          <button onClick={() => punchOut()}>punch out</button>
-        ) : (
-          <button onClick={() => punchIn()}>punch in</button>
-        )}
       </div>
 
       {entries ? (
@@ -130,12 +122,24 @@ export function Timekeeping() {
               />
               <input aria-label={'duration'} readOnly value={duration(entry)} />
               <button onClick={() => deleteEntry(entry)}>delete entry</button>
+              {!entry.end ? (
+                <button onClick={() => punchOut(entry)}>punch out</button>
+              ) : entry.key === head?.key ? (
+                <button onClick={() => punchIn()}>punch in</button>
+              ) : (
+                <span />
+              )}
             </div>
           ))}
         </div>
       ) : (
         'loading entries'
       )}
+      {!head ? (
+        <div>
+          <button onClick={() => punchIn()}>punch in</button>
+        </div>
+      ) : undefined}
     </div>
   )
 }
