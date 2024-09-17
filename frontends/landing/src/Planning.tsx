@@ -9,6 +9,7 @@ export function Planning() {
         <li>add live duration for punched-in entries</li>
         <li>convert timelog to bookkeeping entry</li>
         <li>deploy to cdn</li>
+        <li>move entry before another</li>
       </ul>
     </div>
   )
