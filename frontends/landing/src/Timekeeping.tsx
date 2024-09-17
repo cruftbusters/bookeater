@@ -70,6 +70,29 @@ export function Timekeeping() {
     }
   }
 
+  async function deleteEntry(entry: Entry) {
+    if (head?.key === entry.key) {
+      if (entry.previous) {
+        await database.kv.put({ key: 'head', value: entry.previous })
+      } else {
+        await database.kv.delete('head')
+      }
+    } else {
+      let previous = head
+      let next
+      while (previous && previous.key !== entry.key) {
+        next = previous
+        previous = previous.previous
+          ? await database.entries.get(previous.previous)
+          : undefined
+      }
+      if (previous && next) {
+        await database.entries.put({ ...next, previous: previous.previous })
+      }
+    }
+    await database.entries.delete(entry.key)
+  }
+
   return (
     <div className={'large_margin_around'}>
       <h1>timekeeping</h1>
@@ -106,6 +129,7 @@ export function Timekeeping() {
                 value={entry.end}
               />
               <input aria-label={'duration'} readOnly value={duration(entry)} />
+              <button onClick={() => deleteEntry(entry)}>delete entry</button>
             </div>
           ))}
         </div>

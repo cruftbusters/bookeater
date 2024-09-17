@@ -14,6 +14,27 @@ test('manual timekeeping', async ({ page }) => {
   await page.getByLabel('punch start').nth(1).fill('2024-01-01 12:30:00')
   await page.getByLabel('punch end').nth(1).fill('2024-01-01 16:15:00')
   await expect(page.getByLabel('duration').nth(1)).toHaveValue('3h45m')
+
+  await page.getByRole('button', { name: 'delete entry' }).nth(0).click()
+  await page.getByRole('button', { name: 'delete entry' }).click()
+
+  await page.getByRole('button', { name: 'add new entry' }).click()
+
+  await page.getByLabel('punch start').fill('2024-01-01 12:45:00')
+  await page.getByLabel('punch end').fill('2024-01-01 18:45:00')
+
+  await page.getByRole('button', { name: 'add new entry' }).click()
+
+  await page.getByLabel('punch start').nth(1).fill('2024-01-01 19:00:00')
+  await page.getByLabel('punch end').nth(1).fill('2024-01-01 21:00:00')
+
+  await expect(page.getByLabel('duration').nth(0)).toHaveValue('6h')
+  await expect(page.getByLabel('duration').nth(1)).toHaveValue('2h')
+
+  await page.getByRole('button', { name: 'delete entry' }).nth(1).click()
+  await page.getByRole('button', { name: 'delete entry' }).click()
+
+  await expect(page.getByLabel('duration')).not.toBeVisible()
 })
 
 test('punch-button timekeeping', async ({ page }) => {
