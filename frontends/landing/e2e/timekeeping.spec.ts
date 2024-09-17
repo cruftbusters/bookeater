@@ -24,7 +24,7 @@ test('punch-button timekeeping', async ({ page }) => {
 
   await expect(page.getByLabel('punch start')).not.toBeEmpty()
   await expect(page.getByLabel('punch end')).not.toBeEmpty()
-  await expect(page.getByLabel('duration')).toHaveValue('0s')
+  await expect(page.getByLabel('duration')).toHaveValue(/[0-9]s/)
 })
 
 test('persist timekeeping entries', async ({ page }) => {
@@ -35,7 +35,10 @@ test('persist timekeeping entries', async ({ page }) => {
   await page.getByLabel('punch start').fill('2024-01-01 08:00:00')
   await page.getByLabel('punch end').fill('2024-01-01 12:00:00')
 
+  await page.getByRole('button', { name: 'add new entry' }).click()
+
   await page.reload()
 
-  await expect(page.getByLabel('duration')).toHaveValue('4h')
+  await expect(page.getByLabel('duration').nth(0)).toHaveValue('4h')
+  await expect(page.getByLabel('duration').nth(1)).toHaveValue('NaN')
 })

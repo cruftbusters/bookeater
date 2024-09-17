@@ -2,28 +2,66 @@ import { duration } from './duration'
 import { v4 as uuidv4 } from 'uuid'
 import Dexie, { EntityTable } from 'dexie'
 import { useLiveQuery } from 'dexie-react-hooks'
-import Styles from './index.css'
 
-export type Entry = { key: string; start: string; end: string }
+export type Entry = {
+  key: string
+  previous?: string
+  start: string
+  end: string
+}
+export type KV = { key: string; value: string }
 
 const database = new Dexie('bookeater-landing') as Dexie & {
   entries: EntityTable<Entry, 'key'>
+  kv: EntityTable<KV, 'key'>
 }
 
 database.version(1).stores({
-  entries: 'key, start',
+  entries: 'key',
+  kv: 'key',
 })
 
 export function Timekeeping() {
-  const entries = useLiveQuery(() => database.entries.toArray())
-  const head = useLiveQuery(() => database.entries.orderBy('start').last())
+  const head = useLiveQuery(() =>
+    database.kv
+      .get('head')
+      .then((result) =>
+        result ? database.entries.get(result.value) : undefined,
+      ),
+  )
 
-  function addDefault() {
-    database.entries.put({ key: uuidv4(), start: '', end: '' })
+  const entries = useLiveQuery(async () => {
+    const entries = []
+    for (
+      let entry = head;
+      entry;
+      entry = entry.previous
+        ? await database.entries.get(entry.previous)
+        : undefined
+    ) {
+      entries.unshift(entry)
+    }
+    return entries
+  }, [head])
+
+  async function addEntry(update = (entry: Entry) => entry) {
+    const entry = update({
+      key: uuidv4(),
+      start: '',
+      end: '',
+      previous: head?.key,
+    })
+    await database.entries.put(entry)
+    return database.kv.put({ key: 'head', value: entry.key })
   }
 
   function punchIn() {
-    database.entries.put({ key: uuidv4(), start: getDateTime(), end: '' })
+    addEntry((defaultEntry) => ({
+      ...defaultEntry,
+      key: uuidv4(),
+      start: getDateTime(),
+      end: '',
+    }))
   }
 
   function punchOut() {
@@ -36,7 +74,7 @@ export function Timekeeping() {
     <div className={'large_margin_around'}>
       <h1>timekeeping</h1>
       <div>
-        <button onClick={() => addDefault()}>add new entry</button>
+        <button onClick={() => addEntry()}>add new entry</button>
         {head?.end === '' ? (
           <button onClick={() => punchOut()}>punch out</button>
         ) : (
