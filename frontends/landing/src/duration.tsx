@@ -1,4 +1,4 @@
-import { Entry } from './Timekeeping'
+import { Entry } from './TimekeepingV1'
 
 export function duration(entry: Entry): string {
   const start = new Date(entry.start)

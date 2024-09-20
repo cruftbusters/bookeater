@@ -2,6 +2,7 @@ import { duration } from './duration'
 import { v4 as uuidv4 } from 'uuid'
 import Dexie, { EntityTable } from 'dexie'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { getDateTime } from './getDateTime'
 
 export type Entry = {
   key: string
@@ -21,7 +22,7 @@ database.version(1).stores({
   kv: 'key',
 })
 
-export function Timekeeping() {
+export function TimekeepingV1() {
   const head = useLiveQuery(() =>
     database.kv
       .get('head')
@@ -142,10 +143,4 @@ export function Timekeeping() {
       ) : undefined}
     </div>
   )
-}
-
-function getDateTime() {
-  const iso = new Date().toISOString()
-  const [date, time] = iso.substring(0, 19).split('T')
-  return `${date} ${time}`
 }
