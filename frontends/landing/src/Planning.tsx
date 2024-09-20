@@ -4,6 +4,9 @@ export function Planning() {
       <h1>planning</h1>
       <h2>todo</h2>
       <ul>
+        <li>one line per punch (in or out)</li>
+        <li>button to add empty in/out or out/in between</li>
+        <li>localize times</li>
         <li>summarize total duration</li>
         <li>add rate field and total amount</li>
         <li>add live duration for punched-in entries</li>
