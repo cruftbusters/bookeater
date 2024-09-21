@@ -12,6 +12,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@bookeater/datetime": "workspace:^",
     "@types/uuid": "^10.0.0",
     "dexie": "^4.0.8",
     "dexie-react-hooks": "^1.1.7",

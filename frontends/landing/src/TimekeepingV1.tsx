@@ -1,8 +1,7 @@
-import { duration } from './duration'
+import { duration, getDateTime } from '@bookeater/datetime'
 import { v4 as uuidv4 } from 'uuid'
 import Dexie, { EntityTable } from 'dexie'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { getDateTime } from './getDateTime'
 
 export type Entry = {
   key: string
