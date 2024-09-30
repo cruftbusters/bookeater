@@ -1,11 +1,10 @@
 import { Planning } from './Planning'
-import { TimekeepingV1 } from './TimekeepingV1'
-import { TimekeepingV2 } from './TimekeepingV2'
+import { Timekeeping } from './Timekeeping'
 
 function App() {
   return (
     <>
-      {location.pathname === '/v1' ? <TimekeepingV1 /> : <TimekeepingV2 />}
+      <Timekeeping />
       <Planning />
     </>
   )

@@ -1,4 +1,4 @@
-export function TimekeepingV2() {
+export function Timekeeping() {
   return (
     <div className={'large_margin_around'}>
       <button>punch in</button>
