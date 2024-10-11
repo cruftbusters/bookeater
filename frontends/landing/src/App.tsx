@@ -1,10 +1,16 @@
 import { Planning } from './Planning'
-import { Timekeeping } from './Timekeeping'
+import { BigMote } from './BigMote'
+import { Bookkeeping } from './Bookkeeping'
 
 function App() {
   return (
     <>
-      <Timekeeping />
+      <BigMote>
+        <h1>bookeater</h1>
+      </BigMote>
+      <BigMote>
+        <Bookkeeping />
+      </BigMote>
       <Planning />
     </>
   )

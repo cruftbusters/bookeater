@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [react()],
   // https://vitest.dev/config/
   test: {
+    environment: 'jsdom',
     exclude: [...configDefaults.exclude, 'e2e'],
   },
 })
