@@ -13,3 +13,15 @@ test('summarize one movement', async ({ page }) => {
   await expect(summary).toContainText('assets: 4096')
   await expect(summary).toContainText('liabilities: 4096')
 })
+
+test('write credit after debit wipes credit', async ({ page }) => {
+  await page.goto('http://localhost:5173')
+
+  await page.getByLabel('account').fill('assets')
+  await page.getByLabel('debit').fill('4096')
+  await page.getByLabel('credit').fill('8192')
+  await expect(page.getByLabel('debit')).toHaveValue('')
+
+  const summary = page.getByText('summary: ')
+  await expect(summary).toContainText('assets: (8192)')
+})

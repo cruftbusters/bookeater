@@ -4,9 +4,11 @@ export function Bookkeeping() {
   return <Movement />
 }
 
-type Line = { account?: string; amount?: string }
+type Line = { account: string; amount: string; type: 'debit' | 'credit' }
 export function Movement() {
-  const [movement, setMovement] = useState<Line[]>([{}])
+  const [movement, setMovement] = useState<Line[]>([
+    { account: '', amount: '', type: 'debit' },
+  ])
 
   function setLine(index: number, update: Line) {
     setMovement((lines) =>
@@ -14,23 +16,39 @@ export function Movement() {
     )
   }
 
-  const summary = movement.reduce((summary, line) => {
-    let balance = summary.get(line.account) || 0
-    if (line.amount) {
-      balance += parseInt(line.amount)
+  const summaryAsMap = new Map<string, number>()
+
+  movement.forEach((line: Line) => {
+    const { account, amount, type } = line
+    let balance = summaryAsMap.get(account) || 0
+    if (amount) {
+      const isDebit = type === 'debit'
+      const isDebitFlipped = account.startsWith('liabilities')
+      if (isDebit != isDebitFlipped) {
+        balance += parseInt(amount)
+      } else {
+        balance -= parseInt(amount)
+      }
     }
-    return summary.set(line.account, balance)
-  }, new Map())
+    if (balance === 0) {
+      return summaryAsMap.delete(account)
+    }
+    return summaryAsMap.set(account, balance)
+  })
+
+  const summary = Array.from(summaryAsMap.entries())
 
   return (
     <>
-      <p>
-        by default, debiting an account increases its balance and crediting an
-        account decreases its balance. however, the opposite is true for
-        accounts prefixed with &quote;liabilities:&quote;
-      </p>
+      <p>assets equal liabilities plus equity</p>
       <div>
-        <button onClick={() => setMovement((lines) => lines.concat({}))}>
+        <button
+          onClick={() =>
+            setMovement((lines) =>
+              lines.concat({ account: '', amount: '', type: 'debit' }),
+            )
+          }
+        >
           add line
         </button>
       </div>
@@ -51,23 +69,35 @@ export function Movement() {
             <input
               aria-label="debit"
               onChange={(e) =>
-                setLine(index, { ...line, amount: e.target.value })
+                setLine(index, {
+                  ...line,
+                  amount: e.target.value,
+                  type: 'debit',
+                })
               }
+              value={line.type === 'debit' ? line.amount : ''}
             />
             <input
               aria-label="credit"
               onChange={(e) =>
-                setLine(index, { ...line, amount: e.target.value })
+                setLine(index, {
+                  ...line,
+                  amount: e.target.value,
+                  type: 'credit',
+                })
               }
+              value={line.type === 'credit' ? line.amount : ''}
             />
           </GridRow>
         ))}
       </Grid>
-      <div>
+      <div hidden={summary.length < 1}>
         {'summary: '}
-        {Array.from(summary.entries()).map(
-          ([account, amount]) => `${account}: ${amount}`,
-        )}
+        {summary.map(([account, amount]) => (
+          <div key={account}>
+            {account}: {amount > 0 ? amount : `(${-amount})`}
+          </div>
+        ))}
       </div>
     </>
   )
