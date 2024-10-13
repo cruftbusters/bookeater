@@ -16,81 +16,104 @@ export function Movement() {
     )
   }
 
-  const summaryAsMap = new Map<string, number>()
+  const balanceAsMap = new Map<string, number>()
+  let net = 0
 
   movement.forEach((line: Line) => {
-    const { account, amount, type } = line
-    let balance = summaryAsMap.get(account) || 0
-    if (amount) {
+    const { account, amount: amountAsString, type } = line
+    let balance = balanceAsMap.get(account) || 0
+    if (amountAsString) {
+      const amount = parseInt(amountAsString)
+
       const isDebit = type === 'debit'
-      const isDebitFlipped = account.startsWith('liabilities')
-      if (isDebit != isDebitFlipped) {
-        balance += parseInt(amount)
+
+      if (isDebit) {
+        net += amount
       } else {
-        balance -= parseInt(amount)
+        net -= amount
+      }
+
+      const isDebitFlipped =
+        account.startsWith('liabilities') || account.startsWith('equity')
+
+      if (isDebit != isDebitFlipped) {
+        balance += amount
+      } else {
+        balance -= amount
       }
     }
     if (balance === 0) {
-      return summaryAsMap.delete(account)
+      return balanceAsMap.delete(account)
     }
-    return summaryAsMap.set(account, balance)
+    return balanceAsMap.set(account, balance)
   })
 
-  const summary = Array.from(summaryAsMap.entries())
+  const summary = Array.from(balanceAsMap.entries())
 
   return (
     <>
-      <p>assets equal liabilities plus equity</p>
+      <span hidden={net === 0}>
+        {'warning: '}
+        {'movement is not balanced: '}
+        {net > 0
+          ? `debits is ${net} greater than credits`
+          : `credits is ${-net} greater than debits`}
+      </span>
+      <span hidden={net !== 0}>
+        {'info: '}
+        {'movement is balanced'}
+      </span>
+      <button
+        style={{ marginLeft: '0.5em' }}
+        onClick={() =>
+          setMovement((lines) =>
+            lines.concat({ account: '', amount: '', type: 'debit' }),
+          )
+        }
+      >
+        add line
+      </button>
       <div>
-        <button
-          onClick={() =>
-            setMovement((lines) =>
-              lines.concat({ account: '', amount: '', type: 'debit' }),
-            )
-          }
-        >
-          add line
-        </button>
-      </div>
-      <Grid style={{ gridTemplateColumns: 'repeat(3, auto)' }}>
-        <GridRow>
-          <span>account</span>
-          <span>debit</span>
-          <span>credit</span>
-        </GridRow>
-        {movement.map((line, index) => (
-          <GridRow key={index}>
-            <input
-              aria-label="account"
-              onChange={(e) =>
-                setLine(index, { ...line, account: e.target.value })
-              }
-            />
-            <input
-              aria-label="debit"
-              onChange={(e) =>
-                setLine(index, {
-                  ...line,
-                  amount: e.target.value,
-                  type: 'debit',
-                })
-              }
-              value={line.type === 'debit' ? line.amount : ''}
-            />
-            <input
-              aria-label="credit"
-              onChange={(e) =>
-                setLine(index, {
-                  ...line,
-                  amount: e.target.value,
-                  type: 'credit',
-                })
-              }
-              value={line.type === 'credit' ? line.amount : ''}
-            />
+        <Grid style={{ gridTemplateColumns: 'repeat(3, auto)' }}>
+          <GridRow>
+            <span>account</span>
+            <span>debit</span>
+            <span>credit</span>
           </GridRow>
-        ))}
-      </Grid>
+          {movement.map((line, index) => (
+            <GridRow key={index}>
+              <input
+                aria-label="account"
+                onChange={(e) =>
+                  setLine(index, { ...line, account: e.target.value })
+                }
+              />
+              <input
+                aria-label="debit"
+                onChange={(e) =>
+                  setLine(index, {
+                    ...line,
+                    amount: e.target.value,
+                    type: 'debit',
+                  })
+                }
+                value={line.type === 'debit' ? line.amount : ''}
+              />
+              <input
+                aria-label="credit"
+                onChange={(e) =>
+                  setLine(index, {
+                    ...line,
+                    amount: e.target.value,
+                    type: 'credit',
+                  })
+                }
+                value={line.type === 'credit' ? line.amount : ''}
+              />
+            </GridRow>
+          ))}
+        </Grid>
+      </div>
       <div hidden={summary.length < 1}>
         {'summary: '}
         {summary.map(([account, amount]) => (
@@ -107,7 +130,18 @@ function Grid({
   children,
   style,
 }: PropsWithChildren & { style: CSSProperties }) {
-  return <div style={{ ...style, display: 'inline-grid' }}>{children}</div>
+  return (
+    <div
+      style={{
+        ...style,
+        display: 'inline-grid',
+        gridColumnGap: '0.25em',
+        gridRowGap: '0.125em',
+      }}
+    >
+      {children}
+    </div>
+  )
 }
 
 function GridRow({ children }: PropsWithChildren) {
