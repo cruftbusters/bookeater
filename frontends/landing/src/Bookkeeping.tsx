@@ -52,17 +52,6 @@ export function Movement() {
 
   return (
     <>
-      <span hidden={net === 0}>
-        {'warning: '}
-        {'movement is not balanced: '}
-        {net > 0
-          ? `debits is ${net} greater than credits`
-          : `credits is ${-net} greater than debits`}
-      </span>
-      <span hidden={net !== 0}>
-        {'info: '}
-        {'movement is balanced'}
-      </span>
       <button
         style={{ marginLeft: '0.5em' }}
         onClick={() =>
@@ -116,6 +105,14 @@ export function Movement() {
       </div>
       <div hidden={summary.length < 1}>
         {'summary: '}
+        <div hidden={net === 0}>
+          {'warning: '}
+          {'movement is not balanced: '}
+          {net > 0
+            ? `debits is ${net} greater than credits`
+            : `credits is ${-net} greater than debits`}
+        </div>
+        <div hidden={net !== 0}>{'movement is balanced'}</div>
         {summary.map(([account, amount]) => (
           <div key={account}>
             {account}: {amount > 0 ? amount : `(${-amount})`}
